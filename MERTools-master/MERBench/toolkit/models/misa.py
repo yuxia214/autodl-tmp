@@ -104,9 +104,14 @@ class MISA(nn.Module):
         self.grad_clip = args.grad_clip
         
         # ============ 新增：缺失模态相关参数 ============
-        self.modal_dropout_prob = getattr(args, 'modal_dropout_prob', 0.2)  # 模态dropout概率
-        self.cross_recon_weight = getattr(args, 'cross_recon_weight', 0.5)  # 跨模态重建权重
+        self.modal_dropout_prob = getattr(args, 'modal_dropout_prob', 0.15)  # 模态dropout概率（降低以保护完整模态性能）
+        self.cross_recon_weight = getattr(args, 'cross_recon_weight', 0.3)   # 跨模态重建权重
         self.hidden_dim = hidden_dim
+        # 课程学习：训练初期少dropout，逐渐增加
+        self.curriculum_start_epoch = getattr(args, 'curriculum_start_epoch', 5)  # 开始使用dropout的epoch
+        self.curriculum_rampup_epochs = getattr(args, 'curriculum_rampup_epochs', 10)  # 达到最大dropout的epoch数
+        self.current_epoch = 0  # 当前训练epoch
+        self.modal_masks = None  # 保存当前batch的mask用于重建
         # ================================================
         
         # params: intermedia
@@ -203,7 +208,7 @@ class MISA(nn.Module):
         self.fc_out_1 = nn.Linear(output_dim, output_dim1)
         self.fc_out_2 = nn.Linear(output_dim, output_dim2)
 
-    def modal_dropout(self, utterance_t, utterance_v, utterance_a):
+    def modal_dropout(self, utterance_t, utterance_v, utterance_a, dropout_prob=None):
         """
         训练时随机mask掉某些模态，提升缺失模态鲁棒性
         返回：处理后的特征和模态mask
@@ -211,11 +216,14 @@ class MISA(nn.Module):
         batch_size = utterance_t.size(0)
         device = utterance_t.device
         
-        if self.training and self.modal_dropout_prob > 0:
+        # 使用传入的概率或默认概率
+        prob = dropout_prob if dropout_prob is not None else self.modal_dropout_prob
+        
+        if self.training and prob > 0:
             # 为每个样本独立生成模态dropout mask
-            mask_t = (torch.rand(batch_size, 1, device=device) > self.modal_dropout_prob).float()
-            mask_v = (torch.rand(batch_size, 1, device=device) > self.modal_dropout_prob).float()
-            mask_a = (torch.rand(batch_size, 1, device=device) > self.modal_dropout_prob).float()
+            mask_t = (torch.rand(batch_size, 1, device=device) > prob).float()
+            mask_v = (torch.rand(batch_size, 1, device=device) > prob).float()
+            mask_a = (torch.rand(batch_size, 1, device=device) > prob).float()
             
             # 确保每个样本至少保留一个模态（更健壮的实现）
             modality_sum = (mask_t + mask_v + mask_a).squeeze(-1)
@@ -244,11 +252,27 @@ class MISA(nn.Module):
             utterance_v = utterance_v * mask_v + missing_v * (1 - mask_v)
             utterance_a = utterance_a * mask_a + missing_a * (1 - mask_a)
             
+            # 保存mask供跨模态重建损失使用
+            self._dropout_masks = (mask_t, mask_v, mask_a)
             return utterance_t, utterance_v, utterance_a, (mask_t, mask_v, mask_a)
         else:
             # 推理时返回全1 mask
             ones = torch.ones(batch_size, 1, device=device)
+            self._dropout_masks = (ones, ones, ones)
             return utterance_t, utterance_v, utterance_a, (ones, ones, ones)
+
+    def set_epoch(self, epoch):
+        """设置当前epoch，用于课程学习调整dropout概率"""
+        self.current_epoch = epoch
+    
+    def get_current_dropout_prob(self):
+        """根据课程学习策略计算当前的dropout概率"""
+        if self.current_epoch < self.curriculum_start_epoch:
+            return 0.0  # 初期不使用dropout
+        
+        progress = (self.current_epoch - self.curriculum_start_epoch) / max(1, self.curriculum_rampup_epochs)
+        progress = min(1.0, progress)  # 限制在[0, 1]
+        return self.modal_dropout_prob * progress
 
     def shared_private(self, utterance_t, utterance_v, utterance_a):
         # Projecting to same sized space
@@ -278,13 +302,42 @@ class MISA(nn.Module):
     ## inter loss calculation
     ##########################################################
     def get_recon_loss(self):
-        loss =  MSE()(self.utt_t_recon, self.utt_t_orig)
-        loss += MSE()(self.utt_v_recon, self.utt_v_orig)
-        loss += MSE()(self.utt_a_recon, self.utt_a_orig)
-        loss = loss / 3.0
-        return loss
+        """重建损失：只对未被dropout的模态计算"""
+        if hasattr(self, '_dropout_masks'):
+            mask_t, mask_v, mask_a = self._dropout_masks
+            t_valid = mask_t.mean() > 0.5
+            v_valid = mask_v.mean() > 0.5
+            a_valid = mask_a.mean() > 0.5
+        else:
+            t_valid = v_valid = a_valid = True
+        
+        loss = torch.tensor(0.0, device=self.utt_t_recon.device)
+        count = 0
+        
+        if t_valid:
+            loss += MSE()(self.utt_t_recon, self.utt_t_orig)
+            count += 1
+        if v_valid:
+            loss += MSE()(self.utt_v_recon, self.utt_v_orig)
+            count += 1
+        if a_valid:
+            loss += MSE()(self.utt_a_recon, self.utt_a_orig)
+            count += 1
+            
+        return loss / max(1, count)
 
     def get_diff_loss(self):
+        """差分损失：只对未被dropout的模态计算"""
+        # 获取dropout mask判断哪些模态可用
+        if hasattr(self, '_dropout_masks'):
+            mask_t, mask_v, mask_a = self._dropout_masks
+            # 检查每个模态是否有足够的有效样本（至少50%未被dropout）
+            t_valid = mask_t.mean() > 0.5
+            v_valid = mask_v.mean() > 0.5
+            a_valid = mask_a.mean() > 0.5
+        else:
+            t_valid = v_valid = a_valid = True
+        
         shared_t = self.utt_shared_t
         shared_v = self.utt_shared_v
         shared_a = self.utt_shared_a
@@ -292,43 +345,65 @@ class MISA(nn.Module):
         private_v = self.utt_private_v
         private_a = self.utt_private_a
 
-        # Between private and shared
-        loss =  DiffLoss()(private_t, shared_t)
-        loss += DiffLoss()(private_v, shared_v)
-        loss += DiffLoss()(private_a, shared_a)
+        loss = torch.tensor(0.0, device=shared_t.device)
+        count = 0
+        
+        # Between private and shared (只对有效模态)
+        if t_valid:
+            loss += DiffLoss()(private_t, shared_t)
+            count += 1
+        if v_valid:
+            loss += DiffLoss()(private_v, shared_v)
+            count += 1
+        if a_valid:
+            loss += DiffLoss()(private_a, shared_a)
+            count += 1
 
-        # Across privates
-        loss += DiffLoss()(private_a, private_t)
-        loss += DiffLoss()(private_a, private_v)
-        loss += DiffLoss()(private_t, private_v)
-        return loss
+        # Across privates (只对有效模态对)
+        if t_valid and a_valid:
+            loss += DiffLoss()(private_a, private_t)
+            count += 1
+        if v_valid and a_valid:
+            loss += DiffLoss()(private_a, private_v)
+            count += 1
+        if t_valid and v_valid:
+            loss += DiffLoss()(private_t, private_v)
+            count += 1
+            
+        return loss / max(1, count) * 6  # 保持与原始scale一致
 
     def get_cmd_loss(self):
-        # losses between shared states
-        loss =  CMD()(self.utt_shared_t, self.utt_shared_v, 5)
-        loss += CMD()(self.utt_shared_t, self.utt_shared_a, 5)
-        loss += CMD()(self.utt_shared_a, self.utt_shared_v, 5)
-        loss = loss/3.0
-        return loss
+        """CMD损失：只对未被dropout的模态对计算"""
+        if hasattr(self, '_dropout_masks'):
+            mask_t, mask_v, mask_a = self._dropout_masks
+            t_valid = mask_t.mean() > 0.5
+            v_valid = mask_v.mean() > 0.5
+            a_valid = mask_a.mean() > 0.5
+        else:
+            t_valid = v_valid = a_valid = True
+        
+        loss = torch.tensor(0.0, device=self.utt_shared_t.device)
+        count = 0
+        
+        if t_valid and v_valid:
+            loss += CMD()(self.utt_shared_t, self.utt_shared_v, 5)
+            count += 1
+        if t_valid and a_valid:
+            loss += CMD()(self.utt_shared_t, self.utt_shared_a, 5)
+            count += 1
+        if a_valid and v_valid:
+            loss += CMD()(self.utt_shared_a, self.utt_shared_v, 5)
+            count += 1
+            
+        return loss / max(1, count)
     
     # ============ 新增：跨模态重建损失 ============
     def get_cross_recon_loss(self):
         """
-        跨模态重建损失：用其他两个模态的shared表示重建缺失模态
-        这迫使shared空间学习足够的信息来恢复任意缺失模态
+        跨模态重建损失：暂时禁用以保证训练稳定性
+        Modal dropout本身已经能够提升缺失模态鲁棒性
         """
-        # 从 v+a 重建 t
-        t_from_va = self.cross_recon_t(torch.cat([self.utt_shared_v, self.utt_shared_a], dim=1))
-        # 从 t+a 重建 v
-        v_from_ta = self.cross_recon_v(torch.cat([self.utt_shared_t, self.utt_shared_a], dim=1))
-        # 从 t+v 重建 a
-        a_from_tv = self.cross_recon_a(torch.cat([self.utt_shared_t, self.utt_shared_v], dim=1))
-        
-        # 使用detach()防止梯度回传到原始表示，只训练重建器
-        loss = MSE()(t_from_va, self.utt_t_orig.detach())
-        loss += MSE()(v_from_ta, self.utt_v_orig.detach())
-        loss += MSE()(a_from_tv, self.utt_a_orig.detach())
-        return loss / 3.0
+        return torch.tensor(0.0, device=self.utt_shared_t.device)
     # =============================================
     
     def forward(self, batch, missing_mask=None):
@@ -342,9 +417,11 @@ class MISA(nn.Module):
         utterance_text  = self.text_encoder(batch['texts'])
         utterance_video = self.video_encoder(batch['videos'])
 
-        # ============ 新增：模态dropout ============
+        # ============ 新增：模态dropout（课程学习策略）============
+        # 训练初期少dropout，逐渐增加
+        current_prob = self.get_current_dropout_prob() if self.training else 0.0
         utterance_text, utterance_video, utterance_audio, modal_masks = \
-            self.modal_dropout(utterance_text, utterance_video, utterance_audio)
+            self.modal_dropout(utterance_text, utterance_video, utterance_audio, current_prob)
         self.modal_masks = modal_masks  # 保存用于可能的调试
         # ==========================================
 
