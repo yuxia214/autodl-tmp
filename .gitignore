@@ -1,0 +1,60 @@
+# 忽略指定的目录和文件（由用户请求）
+# 忽略 features 目录
+/features/
+
+# 忽略指定的 zip 文件
+/feature.zip
+/MERTools-master.zip
+/MPLMM-main修改1.zip
+
+# ---------- 推荐的其他忽略项（不包含日志） ----------
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# 临时文件
+tmp/
+*.tmp
+*.swp
+*~
+
+# 模型权重与二进制文件
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.h5
+models/
+pretrained_models/
+weights/
+
+# 数据 / 特征文件
+data/
+dataset/
+datasets/
+*.npy
+
+# 回收站与临时存档
+/.Trash-0/
+
+# 系统与编辑器配置
+.DS_Store
+.vscode/
+.idea/
+
+# 构建产物
+dist/
+build/
+*.egg-info/
+pip-wheel-metadata/
+.cache/
