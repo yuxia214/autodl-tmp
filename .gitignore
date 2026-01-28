@@ -1,5 +1,5 @@
 # 忽略指定的目录和文件（由用户请求）
-/root/autodl-tmp/.autodl
+/.autodl/
 # 忽略 features 目录
 /features/
 
