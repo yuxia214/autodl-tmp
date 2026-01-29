@@ -4,17 +4,12 @@
 ######################################################################################################################
 
 # ============================================
-# 方案1: 使用 attention_robust 模型 (推荐)
-# - 包含模态dropout训练策略
-# - 更强的正则化
-# - 早停机制
+# 方案1: 降低正则化强度（推荐先试这个）
+# - 降低dropout: 0.5 -> 0.4
+# - 降低modality_dropout: 0.3 -> 0.15
+# - 增加patience让模型充分训练
 # ============================================
-
-# 切换到工作目录
-cd /root/autodl-tmp/MERTools-master/MERBench
-
-# 基础配置 - 使用固定优化后的超参数
-python -u /root/autodl-tmp/MERTools-master/MERBench/main-robust.py \
+python -u main-robust.py \
     --model='attention_robust' \
     --feat_type='utt' \
     --dataset='MER2023' \
@@ -22,22 +17,22 @@ python -u /root/autodl-tmp/MERTools-master/MERBench/main-robust.py \
     --text_feature='Baichuan-13B-Base-UTT' \
     --video_feature='clip-vit-large-patch14-UTT' \
     --hidden_dim=128 \
-    --dropout=0.5 \
-    --modality_dropout=0.3 \
+    --dropout=0.4 \
+    --modality_dropout=0.15 \
     --use_modality_dropout \
     --lr=5e-4 \
-    --l2=1e-4 \
+    --l2=5e-5 \
     --grad_clip=1.0 \
     --epochs=100 \
-    --early_stopping_patience=20 \
-    --lr_patience=10 \
+    --early_stopping_patience=25 \
+    --lr_patience=12 \
     --lr_factor=0.5 \
     --batch_size=32 \
     --gpu=0
 
 
 # ============================================
-# 方案2: 更高的模态dropout比例 (如果test2提升不够)
+# 方案2: 中等正则化（如果方案1过拟合）
 # ============================================
 # python -u main-robust.py \
 #     --model='attention_robust' \
@@ -47,21 +42,44 @@ python -u /root/autodl-tmp/MERTools-master/MERBench/main-robust.py \
 #     --text_feature='Baichuan-13B-Base-UTT' \
 #     --video_feature='clip-vit-large-patch14-UTT' \
 #     --hidden_dim=128 \
-#     --dropout=0.6 \
-#     --modality_dropout=0.4 \
+#     --dropout=0.45 \
+#     --modality_dropout=0.2 \
 #     --use_modality_dropout \
-#     --lr=3e-4 \
-#     --l2=5e-4 \
+#     --lr=5e-4 \
+#     --l2=1e-4 \
 #     --grad_clip=1.0 \
 #     --epochs=100 \
-#     --early_stopping_patience=15 \
-#     --lr_patience=8 \
+#     --early_stopping_patience=25 \
+#     --lr_patience=12 \
 #     --batch_size=32 \
 #     --gpu=0
 
 
 # ============================================
-# 方案3: 更小的hidden_dim (减少过拟合)
+# 方案3: 不使用模态dropout，只用增强正则化
+# （测试是否模态dropout本身有问题）
+# ============================================
+# python -u main-robust.py \
+#     --model='attention_robust' \
+#     --feat_type='utt' \
+#     --dataset='MER2023' \
+#     --audio_feature='chinese-hubert-large-UTT' \
+#     --text_feature='Baichuan-13B-Base-UTT' \
+#     --video_feature='clip-vit-large-patch14-UTT' \
+#     --hidden_dim=128 \
+#     --dropout=0.5 \
+#     --no_modality_dropout \
+#     --lr=5e-4 \
+#     --l2=1e-4 \
+#     --grad_clip=1.0 \
+#     --epochs=100 \
+#     --early_stopping_patience=25 \
+#     --batch_size=32 \
+#     --gpu=0
+
+
+# ============================================
+# 方案4: 更小的hidden_dim减少模型容量
 # ============================================
 # python -u main-robust.py \
 #     --model='attention_robust' \
@@ -71,30 +89,13 @@ python -u /root/autodl-tmp/MERTools-master/MERBench/main-robust.py \
 #     --text_feature='Baichuan-13B-Base-UTT' \
 #     --video_feature='clip-vit-large-patch14-UTT' \
 #     --hidden_dim=64 \
-#     --dropout=0.5 \
-#     --modality_dropout=0.3 \
+#     --dropout=0.4 \
+#     --modality_dropout=0.15 \
+#     --use_modality_dropout \
 #     --lr=5e-4 \
-#     --l2=1e-4 \
+#     --l2=5e-5 \
 #     --grad_clip=1.0 \
 #     --epochs=100 \
-#     --early_stopping_patience=20 \
-#     --batch_size=32 \
-#     --gpu=0
-
-
-# ============================================
-# 方案4: 使用原始attention模型但增强正则化
-# (通过修改main-release.py的参数)
-# ============================================
-# python -u main-release.py \
-#     --model='attention' \
-#     --feat_type='utt' \
-#     --dataset='MER2023' \
-#     --audio_feature='chinese-hubert-large-UTT' \
-#     --text_feature='Baichuan-13B-Base-UTT' \
-#     --video_feature='clip-vit-large-patch14-UTT' \
-#     --lr=1e-4 \
-#     --l2=1e-3 \
-#     --epochs=50 \
+#     --early_stopping_patience=25 \
 #     --batch_size=32 \
 #     --gpu=0
