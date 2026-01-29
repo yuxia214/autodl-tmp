@@ -28,7 +28,7 @@ misa:
   recon_weight: [0.0, 0.1, 0.2]
   grad_clip: [-1.0, 0.8, 1.0]
   lr: [1e-3, 1e-4]
- 
+
 mfn:
   hidden_dim: [128, 256]
   mem_dim: [128]
