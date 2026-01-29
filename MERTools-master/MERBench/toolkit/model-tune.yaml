@@ -78,3 +78,12 @@ attention:
   dropout: [0.2, 0.3, 0.4, 0.5]
   grad_clip: [-1.0]
   lr: [1e-3, 1e-4]
+
+# 针对模态缺失场景优化的attention模型
+attention_robust:
+  hidden_dim: [128, 256]
+  dropout: [0.4, 0.5, 0.6]
+  grad_clip: [0.8, 1.0]
+  lr: [5e-4, 1e-4]
+  modality_dropout: [0.2, 0.3, 0.4]
+  use_modality_dropout: [true]

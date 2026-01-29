@@ -14,6 +14,7 @@ from .mctn import MCTN
 from .mmim import MMIM
 from .graph_mfn import Graph_MFN
 from .attention import Attention
+from .attention_robust import AttentionRobust
 
 class get_models(torch.nn.Module):
     def __init__(self, args):
@@ -25,6 +26,7 @@ class get_models(torch.nn.Module):
             
             # 特征压缩到句子级再处理，所以支持 utt/align/unalign
             'attention': Attention,
+            'attention_robust': AttentionRobust,  # 增强版attention，支持模态dropout
             'lmf': LMF,
             'misa': MISA,
             'mmim': MMIM,
