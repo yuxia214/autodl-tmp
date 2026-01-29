@@ -25,6 +25,9 @@ class AttentionRobust(nn.Module):
         self.modality_dropout = getattr(args, 'modality_dropout', 0.2)
         # 是否使用训练模式的模态dropout
         self.use_modality_dropout = getattr(args, 'use_modality_dropout', True)
+        # 渐进式模态dropout：前N个epoch不使用模态dropout
+        self.warmup_epochs = getattr(args, 'modality_dropout_warmup', 0)
+        self.current_epoch = 0
 
         if args.feat_type in ['utt']:
             self.audio_encoder = MLPEncoder(audio_dim, hidden_dim, dropout)
@@ -44,6 +47,10 @@ class AttentionRobust(nn.Module):
         # 额外的正则化层
         self.feat_dropout = nn.Dropout(p=dropout)
     
+    def set_epoch(self, epoch):
+        """设置当前epoch，用于渐进式模态dropout"""
+        self.current_epoch = epoch
+    
     def apply_modality_dropout(self, audio_hidden, text_hidden, video_hidden):
         """
         训练时随机将某些模态置零，模拟模态缺失的情况
@@ -51,6 +58,17 @@ class AttentionRobust(nn.Module):
         """
         if not self.training or not self.use_modality_dropout:
             return audio_hidden, text_hidden, video_hidden
+        
+        # 渐进式：前warmup_epochs个epoch不使用模态dropout
+        if self.current_epoch < self.warmup_epochs:
+            return audio_hidden, text_hidden, video_hidden
+        
+        # 渐进式增加模态dropout概率
+        if self.warmup_epochs > 0:
+            progress = min(1.0, (self.current_epoch - self.warmup_epochs) / self.warmup_epochs)
+            effective_dropout = self.modality_dropout * progress
+        else:
+            effective_dropout = self.modality_dropout
         
         batch_size = audio_hidden.size(0)
         device = audio_hidden.device
@@ -64,7 +82,7 @@ class AttentionRobust(nn.Module):
         # 策略：有一定概率丢弃1个或2个模态（不会全部丢弃）
         for i in range(batch_size):
             # 随机决定是否应用模态dropout
-            if torch.rand(1).item() < self.modality_dropout:
+            if torch.rand(1).item() < effective_dropout:
                 # 随机选择丢弃模式
                 drop_mode = torch.randint(0, 6, (1,)).item()  # 6种丢弃模式
                 

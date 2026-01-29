@@ -134,7 +134,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, default=None, help='dataset')
     parser.add_argument('--train_dataset', type=str, default=None, help='train dataset')
     parser.add_argument('--test_dataset',  type=str, default=None, help='test dataset')
-    parser.add_argument('--save_root', type=str, default='/root/autodl-tmp/MERTools-master/MERBench/saved-robust', help='save prediction results and models')
+    parser.add_argument('--save_root', type=str, default='./saved', help='save prediction results and models')
     parser.add_argument('--debug', action='store_true', default=False, help='whether use debug to limit samples')
     parser.add_argument('--savemodel', action='store_true', default=False, help='whether to save model')
     parser.add_argument('--save_iters', type=int, default=1e8, help='save models per iters')
@@ -170,6 +170,7 @@ if __name__ == '__main__':
     parser.add_argument('--modality_dropout', type=float, default=0.3, help='modality dropout rate for robustness')
     parser.add_argument('--use_modality_dropout', action='store_true', default=True, help='whether to use modality dropout')
     parser.add_argument('--no_modality_dropout', action='store_false', dest='use_modality_dropout', help='disable modality dropout')
+    parser.add_argument('--modality_dropout_warmup', type=int, default=0, help='warmup epochs before applying modality dropout')
     parser.add_argument('--early_stopping_patience', type=int, default=20, help='early stopping patience')
     parser.add_argument('--lr_patience', type=int, default=10, help='lr scheduler patience')
     parser.add_argument('--lr_factor', type=float, default=0.5, help='lr reduction factor')
@@ -271,6 +272,10 @@ if __name__ == '__main__':
         
         for epoch in range(args.epochs):
             epoch_store = {}
+            
+            # 设置当前epoch用于渐进式模态dropout
+            if hasattr(model.model, 'set_epoch'):
+                model.model.set_epoch(epoch)
 
             train_results = train_or_eval_model(args, model, reg_loss, cls_loss, train_loader, dataloader_class, epoch=epoch, optimizer=optimizer, train=True)
             eval_results  = train_or_eval_model(args, model, reg_loss, cls_loss, eval_loader, dataloader_class, epoch=epoch, optimizer=None,      train=False)
