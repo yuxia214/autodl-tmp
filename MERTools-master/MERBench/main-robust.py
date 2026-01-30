@@ -7,11 +7,27 @@
 4. 增强正则化 (更高的dropout和L2)
 5. 固定超参数 (避免随机选择导致不稳定)
 
-使用方法:
+支持的模型:
+- attention_robust: 带模态dropout的attention模型
+- attention_robust_v2: 基于P-RMF的概率化多模态融合模型 (VAE + 不确定性加权 + 代理模态)
+
+使用方法 (V1):
 python -u main-robust.py --model='attention_robust' --feat_type='utt' --dataset='MER2023' \
     --audio_feature='chinese-hubert-large-UTT' \
     --text_feature='Baichuan-13B-Base-UTT' \
     --video_feature='clip-vit-large-patch14-UTT' \
+    --gpu=0
+
+使用方法 (V2 - 推荐):
+python -u main-robust.py --model='attention_robust_v2' --feat_type='utt' --dataset='MER2023' \
+    --audio_feature='chinese-hubert-large-UTT' \
+    --text_feature='Baichuan-13B-Base-UTT' \
+    --video_feature='clip-vit-large-patch14-UTT' \
+    --hidden_dim=128 --dropout=0.35 \
+    --use_vae --kl_weight=0.01 --recon_weight=0.1 --cross_kl_weight=0.01 \
+    --use_proxy_attention --fusion_temperature=1.0 \
+    --modality_dropout=0.15 --modality_dropout_warmup=20 \
+    --lr=5e-4 --l2=5e-5 --epochs=100 --early_stopping_patience=30 \
     --gpu=0
 """
 
@@ -174,6 +190,17 @@ if __name__ == '__main__':
     parser.add_argument('--early_stopping_patience', type=int, default=20, help='early stopping patience')
     parser.add_argument('--lr_patience', type=int, default=10, help='lr scheduler patience')
     parser.add_argument('--lr_factor', type=float, default=0.5, help='lr reduction factor')
+    
+    # AttentionRobustV2专用参数 - VAE + 代理模态
+    parser.add_argument('--use_vae', action='store_true', default=True, help='whether to use VAE encoder')
+    parser.add_argument('--no_vae', action='store_false', dest='use_vae', help='disable VAE encoder')
+    parser.add_argument('--kl_weight', type=float, default=0.01, help='KL divergence loss weight')
+    parser.add_argument('--recon_weight', type=float, default=0.1, help='reconstruction loss weight')
+    parser.add_argument('--cross_kl_weight', type=float, default=0.01, help='cross-modal KL loss weight')
+    parser.add_argument('--use_proxy_attention', action='store_true', default=True, help='whether to use proxy cross-modal attention')
+    parser.add_argument('--no_proxy_attention', action='store_false', dest='use_proxy_attention', help='disable proxy attention')
+    parser.add_argument('--fusion_temperature', type=float, default=1.0, help='temperature for uncertainty weighted fusion')
+    parser.add_argument('--num_attention_heads', type=int, default=4, help='number of attention heads for proxy attention')
     
     args = parser.parse_args()
     torch.cuda.set_device(args.gpu)

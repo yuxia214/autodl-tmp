@@ -1,0 +1,15 @@
+====== Params Pre-analysis =======
+args:  Namespace(audio_feature='chinese-hubert-large-UTT', batch_size=32, cross_kl_weight=0.01, dataset='MER2023', debug=False, dropout=0.35, e2e_dim=None, e2e_name=None, early_stopping_patience=30, epochs=100, feat_scale=1, feat_type='utt', fusion_temperature=1.0, gpu=0, grad_clip=1.0, hidden_dim=128, hyper_path=None, kl_weight=0.01, l2=5e-05, lr=0.0005, lr_adjust='case1', lr_factor=0.5, lr_patience=10, modality_dropout=0.15, modality_dropout_warmup=20, model='attention_robust_v2', n_classes=None, num_attention_heads=4, num_workers=0, print_iters=100000000.0, recon_weight=0.1, save_iters=100000000.0, save_root='/root/autodl-tmp/MERTools-master/MERBench/attention_robust_v2/outputs/results-trimodal', savemodel=False, test_dataset=None, text_feature='Baichuan-13B-Base-UTT', train_dataset=None, use_modality_dropout=True, use_proxy_attention=True, use_vae=True, video_feature='clip-vit-large-patch14-UTT')
+====== Reading Data =======
+Traceback (most recent call last):
+  File "main-robust.py", line 256, in <module>
+    train_loaders, eval_loaders, test_loaders = dataloader_class.get_loaders()
+  File "/root/autodl-tmp/MERTools-master/MERBench/toolkit/dataloader/__init__.py", line 39, in get_loaders
+    return self.dataloader.get_loaders()
+  File "/root/autodl-tmp/MERTools-master/MERBench/toolkit/dataloader/mer2023.py", line 35, in get_loaders
+    names, labels = self.read_names_labels(self.label_path, data_type, debug=self.debug)
+  File "/root/autodl-tmp/MERTools-master/MERBench/toolkit/dataloader/mer2023.py", line 85, in read_names_labels
+    if data_type == 'train': corpus = np.load(label_path, allow_pickle=True)['train_corpus'].tolist()
+  File "/root/miniconda3/lib/python3.8/site-packages/numpy/lib/npyio.py", line 407, in load
+    fid = stack.enter_context(open(os_fspath(file), "rb"))
+FileNotFoundError: [Errno 2] No such file or directory: '/share/home/lianzheng/chinese-mer-2023/dataset/mer2023-dataset-process/label-6way.npz'

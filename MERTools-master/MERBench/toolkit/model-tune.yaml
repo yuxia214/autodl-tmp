@@ -87,3 +87,28 @@ attention_robust:
   lr: [5e-4, 1e-4]
   modality_dropout: [0.2, 0.3, 0.4]
   use_modality_dropout: [true]
+
+# AttentionRobustV2 - 基于P-RMF的概率化多模态融合模型
+# 核心改进：VAE编码器 + 不确定性加权融合 + 代理模态跨模态注意力
+attention_robust_v2:
+  # 基础参数
+  hidden_dim: [128]
+  dropout: [0.3, 0.35, 0.4]
+  grad_clip: [1.0]
+  lr: [5e-4, 1e-4]
+  
+  # VAE参数
+  use_vae: [true]
+  kl_weight: [0.005, 0.01, 0.02]        # KL散度权重
+  recon_weight: [0.05, 0.1, 0.2]        # 重建损失权重
+  cross_kl_weight: [0.005, 0.01]        # 跨模态KL权重
+  
+  # 代理模态参数
+  use_proxy_attention: [true, false]     # 是否使用代理模态注意力
+  fusion_temperature: [0.5, 1.0, 2.0]    # 温度参数
+  num_attention_heads: [4]               # 注意力头数
+  
+  # 模态dropout参数
+  modality_dropout: [0.1, 0.15, 0.2]
+  use_modality_dropout: [true]
+  modality_dropout_warmup: [20, 30]

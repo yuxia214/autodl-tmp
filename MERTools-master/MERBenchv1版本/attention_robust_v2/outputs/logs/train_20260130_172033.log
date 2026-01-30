@@ -1,0 +1,12 @@
+usage: main-robust.py [-h] [--dataset DATASET] [--train_dataset TRAIN_DATASET] [--test_dataset TEST_DATASET]
+                      [--save_root SAVE_ROOT] [--debug] [--savemodel] [--save_iters SAVE_ITERS]
+                      [--audio_feature AUDIO_FEATURE] [--text_feature TEXT_FEATURE] [--video_feature VIDEO_FEATURE]
+                      [--feat_type FEAT_TYPE] [--feat_scale FEAT_SCALE] [--e2e_name E2E_NAME] [--e2e_dim E2E_DIM]
+                      [--n_classes N_CLASSES] [--hyper_path HYPER_PATH] [--model MODEL] [--lr lr] [--lr_adjust LR_ADJUST]
+                      [--l2 L2] [--batch_size BS] [--num_workers nw] [--epochs E] [--print_iters PRINT_ITERS] [--gpu GPU]
+                      [--hidden_dim HIDDEN_DIM] [--dropout DROPOUT] [--grad_clip GRAD_CLIP]
+                      [--modality_dropout MODALITY_DROPOUT] [--use_modality_dropout] [--no_modality_dropout]
+                      [--modality_dropout_warmup MODALITY_DROPOUT_WARMUP]
+                      [--early_stopping_patience EARLY_STOPPING_PATIENCE] [--lr_patience LR_PATIENCE]
+                      [--lr_factor LR_FACTOR]
+main-robust.py: error: unrecognized arguments: --use_vae --kl_weight=0.01 --recon_weight=0.1 --cross_kl_weight=0.01 --use_proxy_attention --fusion_temperature=1.0 --num_attention_heads=4
