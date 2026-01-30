@@ -17,7 +17,7 @@
 
 # ==================== 路径配置 (请根据云服务器修改) ====================
 # 项目根目录
-MERBENCH_ROOT="/root/autodl-tmp/MERTools/MERBench"
+MERBENCH_ROOT="/root/autodl-tmp/MERTools-master/MERBench"
 # MERBENCH_ROOT="/home/user/MERTools/MERBench"
 
 # 输出目录 (结果保存位置)
