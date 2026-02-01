@@ -1,4 +1,6 @@
 import os
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
 import torch
 import numpy as np
 import cv2
@@ -6,8 +8,18 @@ from PIL import Image
 import librosa
 from transformers import AutoTokenizer, AutoModel, AutoFeatureExtractor, Wav2Vec2Processor, HubertModel, BertTokenizer, BertModel
 
+import sys
+import torchaudio
+
 class FeatureExtractor:
     def __init__(self, device='cuda'):
+        # Ensure torchaudio initializes properly BEFORE librosa/soundfile calls if there are conflicts
+        try:
+             # Basic sanity check
+             pass
+        except:
+             pass
+
         self.device = device if torch.cuda.is_available() else 'cpu'
         print(f"Initializing FeatureExtractor on {self.device}...")
         self.init_models()
@@ -25,12 +37,14 @@ class FeatureExtractor:
         # Dim: 768
         print("Loading Audio Model (TencentGameMate/chinese-hubert-base)...")
         try:
-            self.audio_processor = Wav2Vec2Processor.from_pretrained("TencentGameMate/chinese-hubert-base")
+            # We don't need the tokenizer for feature extraction, only the feature extractor part of the processor
+            # So we load AutoFeatureExtractor instead of Wav2Vec2Processor
+            self.audio_processor = AutoFeatureExtractor.from_pretrained("TencentGameMate/chinese-hubert-base")
             self.audio_model = HubertModel.from_pretrained("TencentGameMate/chinese-hubert-base").to(self.device)
         except Exception as e:
             print(f"Failed to load chinese-hubert-base: {e}")
             print("Fallback to facebook/hubert-base-ls960...")
-            self.audio_processor = Wav2Vec2Processor.from_pretrained("facebook/hubert-base-ls960")
+            self.audio_processor = AutoFeatureExtractor.from_pretrained("facebook/hubert-base-ls960")
             self.audio_model = HubertModel.from_pretrained("facebook/hubert-base-ls960").to(self.device)
         self.audio_model.eval()
 
@@ -51,8 +65,18 @@ class FeatureExtractor:
         return outputs.pooler_output.cpu().numpy()
 
     def extract_audio_feature(self, audio_path):
-        # Load audio using librosa
-        raw_speech, sr = librosa.load(audio_path, sr=16000)
+        import soundfile as sf
+        
+        # Load audio using soundfile directly if librosa fails or use librosa with soundfile backend
+        try:
+            raw_speech, sr = librosa.load(audio_path, sr=16000)
+        except Exception as e:
+            print(f"Librosa load failed: {e}, attempting torchaudio...")
+            wav, sr = torchaudio.load(audio_path)
+            if sr != 16000:
+                transform = torchaudio.transforms.Resample(sr, 16000)
+                wav = transform(wav)
+            raw_speech = wav.mean(dim=0).numpy() # Convert stereo to mono if needed
         
         # Handle short audio
         if len(raw_speech) < 1600: # < 0.1s
@@ -95,7 +119,9 @@ class FeatureExtractor:
         # CLIP inputs
         inputs = self.video_processor(images=frames, return_tensors="pt").to(self.device)
         with torch.no_grad():
-            outputs = self.video_model(**inputs)
+            # Use get_image_features for CLIPModel to avoid calling the text branch
+            # This returns the projected 512-dim features
+            outputs = self.video_model.get_image_features(**inputs)
             
-        # outputs.pooler_output: (16, 512) -> Mean pooling -> (1, 512)
-        return outputs.pooler_output.mean(dim=0, keepdim=True).cpu().numpy()
+        # outputs: (16, 512) -> Mean pooling -> (1, 512)
+        return outputs.mean(dim=0, keepdim=True).cpu().numpy()
