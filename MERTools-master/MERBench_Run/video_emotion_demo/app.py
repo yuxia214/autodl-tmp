@@ -22,13 +22,13 @@ from demo import DemoArgs, extract_audio_from_video
 MODELS_LOADED = False
 extractor = None
 model = None
-emotion_labels = ['Neutral', 'Angry', 'Happy', 'Sad', 'Worry', 'Surprise']
+emotion_labels = ['Neutral', 'Angry', 'Happy', 'Sad', 'Worried', 'Surprise']
 EMOTION_COLORS = {
     'Neutral': '#6B7280',
-    'Angry': '#EF4444', 
+    'Angry': '#EF4444',
     'Happy': '#F59E0B',
     'Sad': '#3B82F6',
-    'Worry': '#8B5CF6',
+    'Worried': '#8B5CF6',
     'Surprise': '#10B981'
 }
 EMOTION_EMOJIS = {
@@ -36,7 +36,7 @@ EMOTION_EMOJIS = {
     'Angry': '😠',
     'Happy': '😊',
     'Sad': '😢',
-    'Worry': '😟',
+    'Worried': '😟',
     'Surprise': '😲'
 }
 
@@ -72,28 +72,12 @@ CUSTOM_CSS = """
     margin-bottom: 1rem;
 }
 
-/* 主内容区域 */
-.main-content {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-    padding: 24px;
-    margin-top: 10px;
-}
-
-/* 视频显示区域 */
-.video-container {
-    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: 16px;
-    padding: 12px;
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.video-container img, .video-container video {
-    border-radius: 12px;
-    width: 100% !important;
-    max-height: 400px !important;
+/* 关键：让图片完整显示不被裁剪 */
+.gr-image img {
     object-fit: contain !important;
+    max-height: 100% !important;
+    width: auto !important;
+    margin: auto !important;
 }
 
 /* 情绪结果面板 */
@@ -103,14 +87,6 @@ CUSTOM_CSS = """
     padding: 20px;
     border: 1px solid #e2e8f0;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-/* 控制面板 */
-.control-panel {
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid #e2e8f0;
 }
 
 /* 按钮样式 */
@@ -468,52 +444,82 @@ def process_video_realtime(video_path, text_input, progress=gr.Progress()):
 
 # ==================== 摄像头分析 ====================
 
-def process_webcam_single(frame, text_input):
-    """处理单张摄像头拍照"""
+# 全局变量用于摄像头实时分析
+webcam_text_context = ""
+last_webcam_analysis = 0
+cached_text_feat = None
+
+def process_webcam_stream(frame, text_input):
+    """实时处理摄像头视频流"""
+    global webcam_text_context, last_webcam_analysis, cached_text_feat
+
     if frame is None:
-        return "📷 请先拍照", None, create_emotion_display(None)
-    
+        return None, "等待摄像头画面...", create_emotion_display(None)
+
     if not MODELS_LOADED:
         success, msg = load_components()
         if not success:
-            return msg, None, create_emotion_display(None)
-    
+            return frame, msg, create_emotion_display(None)
+
     try:
+        current_time = time.time()
+
         # 转换颜色空间
         if len(frame.shape) == 3 and frame.shape[2] == 3:
             frame_rgb = frame if frame.dtype == np.uint8 else (frame * 255).astype(np.uint8)
         else:
             frame_rgb = frame
-        
-        # 准备文本特征
+
+        # 限制分析频率 (每0.5秒分析一次，避免卡顿)
+        if current_time - last_webcam_analysis < 0.5:
+            return frame_rgb, "实时分析中...", None  # 返回None表示不更新情绪显示
+
+        last_webcam_analysis = current_time
+
+        # 文本特征（缓存，只在文本变化时重新计算）
         text_content = text_input if text_input else ""
-        text_feat = extractor.extract_text_feature(text_content)
-        
+        if text_content != webcam_text_context or cached_text_feat is None:
+            webcam_text_context = text_content
+            cached_text_feat = extractor.extract_text_feature(text_content)
+
         # 摄像头没有音频，使用零向量
         audio_feat = np.zeros((1, 768))
-        
+
         # 视频特征
         inputs = extractor.video_processor(images=[frame_rgb], return_tensors="pt").to(extractor.device)
         with torch.no_grad():
             vid_out = extractor.video_model.get_image_features(**inputs)
         video_feat = vid_out.cpu().numpy()
-        
+
         features = {
-            'text': text_feat,
+            'text': cached_text_feat,
             'audio': audio_feat,
             'video': video_feat
         }
-        
+
         probs = predict_emotion(features)
         top_emo = max(probs, key=probs.get)
-        
-        status = f"✅ 分析完成 | 主要情绪: {EMOTION_EMOJIS.get(top_emo, '')} {top_emo} ({probs[top_emo]:.1%})"
-        return status, probs, create_emotion_display(probs)
-        
+
+        # 在画面上叠加情绪信息
+        display_frame = frame_rgb.copy()
+        h, w = display_frame.shape[:2]
+
+        # 绘制半透明背景
+        overlay = display_frame.copy()
+        cv2.rectangle(overlay, (10, 10), (220, 70), (0, 0, 0), -1)
+        display_frame = cv2.addWeighted(overlay, 0.6, display_frame, 0.4, 0)
+
+        # 绘制情绪文字
+        cv2.putText(display_frame, f"{top_emo}: {probs[top_emo]:.0%}",
+                   (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
+
+        status = f"实时分析中 | {top_emo} ({probs[top_emo]:.0%})"
+        return display_frame, status, create_emotion_display(probs)
+
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return f"❌ 分析错误: {str(e)}", None, create_emotion_display(None)
+        return frame, f"分析错误: {str(e)}", create_emotion_display(None)
 
 # ==================== Gradio界面 ====================
 
@@ -546,44 +552,41 @@ def create_interface():
 
             # ========== Tab 1: 视频文件分析 ==========
             with gr.TabItem("视频文件分析", id=0):
-                with gr.Row(equal_height=False):
-                    # 左侧：视频显示和控制
-                    with gr.Column(scale=5):
-                        video_display = gr.Image(
-                            label="实时分析画面",
-                            type="numpy",
-                            height=380
+                # 上方：上传和控制
+                with gr.Row():
+                    video_input = gr.Video(
+                        label="上传视频",
+                        format="mp4",
+                        height=100,
+                        scale=2
+                    )
+                    text_input_video = gr.Textbox(
+                        label="文本内容（可选）",
+                        placeholder="输入视频中的对话内容...",
+                        lines=2,
+                        scale=2
+                    )
+                    with gr.Column(scale=1):
+                        analyze_btn = gr.Button(
+                            "开始分析",
+                            variant="primary",
+                            size="lg"
                         )
-
                         video_status = gr.Textbox(
-                            value="上传视频后点击开始分析",
+                            value="等待上传视频",
                             label="",
                             interactive=False,
-                            elem_classes=["status-box"]
+                            lines=1
                         )
 
-                        # 控制区域
-                        with gr.Row():
-                            video_input = gr.Video(
-                                label="上传视频",
-                                format="mp4",
-                                height=120,
-                                scale=3
-                            )
-                            with gr.Column(scale=2):
-                                text_input_video = gr.Textbox(
-                                    label="文本内容（可选）",
-                                    placeholder="输入视频中的对话内容...",
-                                    lines=2
-                                )
-                                analyze_btn = gr.Button(
-                                    "开始实时分析",
-                                    variant="primary",
-                                    size="lg"
-                                )
-
-                    # 右侧：情绪结果
-                    with gr.Column(scale=3):
+                # 下方：视频画面和情绪结果并排
+                with gr.Row():
+                    video_display = gr.Image(
+                        label="实时分析画面",
+                        type="numpy",
+                        scale=3
+                    )
+                    with gr.Column(scale=2):
                         gr.HTML("<h3 style='margin:0 0 12px 0;color:#374151;'>情绪分析结果</h3>")
                         emotion_html = gr.HTML(create_emotion_display(None))
                         emotion_output = gr.Label(
@@ -593,62 +596,54 @@ def create_interface():
                         )
 
             # ========== Tab 2: 摄像头实时分析 ==========
-            with gr.TabItem("摄像头分析", id=1):
-                # 重要提示
+            with gr.TabItem("摄像头实时分析", id=1):
+                # 提示
                 gr.HTML("""
-                    <div class="warning-card" style="margin-bottom:16px;">
-                        <strong>重要提示：</strong>摄像头功能需要 HTTPS 连接才能工作。<br>
-                        <strong>解决方案：</strong>启动时使用 <code>share=True</code> 生成 HTTPS 公网链接，或在本地运行。
+                    <div class="warning-card" style="margin-bottom:12px;">
+                        <strong>提示：</strong>摄像头需要 HTTPS 连接，请使用 <code>--share</code> 启动。启用摄像头后自动开始实时分析。
                     </div>
                 """)
 
-                with gr.Row(equal_height=False):
-                    # 左侧：摄像头
-                    with gr.Column(scale=5):
-                        webcam_input = gr.Image(
-                            label="点击启用摄像头",
-                            source="webcam",
-                            type="numpy",
-                            height=380
-                        )
+                # 上方：文本输入和状态
+                with gr.Row():
+                    text_input_webcam = gr.Textbox(
+                        label="文本内容（可选）",
+                        placeholder="输入当前情境描述...",
+                        lines=1,
+                        scale=3
+                    )
+                    webcam_status = gr.Textbox(
+                        value="启用摄像头后自动开始分析",
+                        label="状态",
+                        interactive=False,
+                        lines=1,
+                        scale=2
+                    )
 
-                        webcam_status = gr.Textbox(
-                            value="点击摄像头区域拍照，然后点击分析按钮",
-                            label="",
-                            interactive=False,
-                            elem_classes=["status-box"]
-                        )
-
-                        with gr.Row():
-                            text_input_webcam = gr.Textbox(
-                                label="文本内容（可选）",
-                                placeholder="输入当前情境描述...",
-                                lines=2,
-                                scale=3
-                            )
-                            webcam_btn = gr.Button(
-                                "分析当前画面",
-                                variant="primary",
-                                size="lg",
-                                scale=2
-                            )
-
-                    # 右侧：结果
+                # 下方：摄像头画面和情绪结果
+                with gr.Row():
                     with gr.Column(scale=3):
+                        webcam_input = gr.Image(
+                            label="摄像头输入（点击启用）",
+                            source="webcam",
+                            streaming=True,
+                            type="numpy"
+                        )
+                        webcam_output = gr.Image(
+                            label="分析结果（带情绪标注）",
+                            type="numpy"
+                        )
+
+                    with gr.Column(scale=2):
                         gr.HTML("<h3 style='margin:0 0 12px 0;color:#374151;'>实时情绪</h3>")
                         webcam_emotion_html = gr.HTML(create_emotion_display(None))
-                        webcam_emotion = gr.Label(
-                            label="情绪概率",
-                            num_top_classes=6,
-                            visible=False
-                        )
 
                         gr.HTML("""
                             <div class="tip-card" style="margin-top:20px;">
-                                <strong>使用步骤：</strong><br>
-                                1. 点击摄像头区域启用摄像头<br>
-                                2. 拍照捕获当前画面<br>
-                                3. 点击"分析当前画面"按钮
+                                <strong>使用说明：</strong><br>
+                                1. 点击摄像头区域启用<br>
+                                2. 自动实时分析情绪<br>
+                                3. 结果叠加在下方画面
                             </div>
                         """)
 
@@ -660,7 +655,7 @@ def create_interface():
                         <h4 style="color:#667eea;margin-bottom:10px;">功能介绍</h4>
                         <ul style="color:#4b5563;line-height:1.8;">
                             <li><strong>视频文件分析</strong>：上传视频，实时显示情绪分析</li>
-                            <li><strong>摄像头分析</strong>：拍照进行情绪识别</li>
+                            <li><strong>摄像头实时分析</strong>：像直播一样实时分析情绪</li>
                         </ul>
                     </div>
                     <div>
@@ -691,10 +686,11 @@ def create_interface():
             outputs=[video_display, video_status, emotion_output, emotion_html]
         )
 
-        webcam_btn.click(
-            fn=process_webcam_single,
+        # 摄像头实时流处理
+        webcam_input.stream(
+            fn=process_webcam_stream,
             inputs=[webcam_input, text_input_webcam],
-            outputs=[webcam_status, webcam_emotion, webcam_emotion_html]
+            outputs=[webcam_output, webcam_status, webcam_emotion_html]
         )
 
     return app
