@@ -1,0 +1,46 @@
+====== Params Pre-analysis =======
+args:  Namespace(audio_feature='chinese-hubert-large-UTT', batch_size=32, contrastive_temperature=0.07, contrastive_weight=0.1, cross_kl_weight=0.01, dataset='MER2023', debug=False, dropout=0.25, e2e_dim=None, e2e_name=None, early_stopping_patience=30, epochs=100, feat_scale=1, feat_type='utt', focal_gamma=2.0, fusion_temperature=1.0, gate_alpha=0.5, gpu=0, grad_clip=1.0, hidden_dim=128, hyper_path=None, kl_warmup_epochs=20, kl_weight=0.01, l2=5e-05, label_smoothing=0.1, lr=0.0005, lr_adjust='case1', lr_factor=0.5, lr_patience=10, mixup_alpha=0.4, modality_dropout=0.15, modality_dropout_warmup=20, model='attention_robust_v5', n_classes=None, num_attention_heads=4, num_workers=0, print_iters=100000000.0, recon_weight=0.1, save_iters=100000000.0, save_root='./saved-trimodal', savemodel=False, test_dataset=None, text_feature='Baichuan-13B-Base-UTT', train_dataset=None, use_contrastive=True, use_dynamic_kl=True, use_gated_fusion=True, use_mixup=False, use_modality_dropout=True, use_proxy_attention=True, use_vae=True, video_feature='clip-vit-large-patch14-UTT')
+====== Reading Data =======
+train: sample number 3373
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-UTT
+  0%|          | 0/3373 [00:00<?, ?it/s]  7%|▋         | 247/3373 [00:00<00:01, 2467.24it/s] 15%|█▍        | 494/3373 [00:00<00:01, 1560.77it/s] 21%|██        | 699/3373 [00:00<00:01, 1726.69it/s] 26%|██▋       | 887/3373 [00:00<00:01, 1375.54it/s] 31%|███       | 1047/3373 [00:00<00:01, 1430.40it/s] 36%|███▌      | 1210/3373 [00:00<00:01, 1485.44it/s] 43%|████▎     | 1442/3373 [00:00<00:01, 1720.90it/s] 48%|████▊     | 1624/3373 [00:00<00:01, 1748.24it/s] 56%|█████▌    | 1891/3373 [00:01<00:00, 2004.29it/s] 62%|██████▏   | 2098/3373 [00:01<00:00, 1970.01it/s] 68%|██████▊   | 2300/3373 [00:01<00:00, 1580.29it/s] 73%|███████▎  | 2473/3373 [00:01<00:00, 1599.49it/s] 78%|███████▊  | 2644/3373 [00:01<00:00, 1311.54it/s] 84%|████████▍ | 2830/3373 [00:01<00:00, 1436.68it/s] 89%|████████▊ | 2988/3373 [00:01<00:00, 1445.39it/s] 93%|█████████▎| 3143/3373 [00:01<00:00, 1470.99it/s] 99%|█████████▉| 3338/3373 [00:02<00:00, 1597.39it/s]100%|██████████| 3373/3373 [00:02<00:00, 1543.49it/s]
+Input feature chinese-hubert-large-UTT ===> dim is (1, 1024)
+  0%|          | 0/3373 [00:00<?, ?it/s]  1%|          | 41/3373 [00:00<00:08, 408.87it/s]  3%|▎         | 108/3373 [00:00<00:05, 559.47it/s]  6%|▋         | 214/3373 [00:00<00:04, 784.45it/s]  9%|▉         | 310/3373 [00:00<00:03, 852.95it/s] 12%|█▏        | 396/3373 [00:00<00:03, 855.02it/s] 15%|█▍        | 502/3373 [00:00<00:03, 921.46it/s] 18%|█▊        | 595/3373 [00:00<00:03, 910.29it/s] 20%|██        | 689/3373 [00:00<00:02, 916.94it/s] 25%|██▍       | 842/3373 [00:00<00:02, 1106.17it/s] 28%|██▊       | 953/3373 [00:01<00:02, 1093.73it/s] 32%|███▏      | 1075/3373 [00:01<00:02, 902.18it/s] 35%|███▍      | 1172/3373 [00:01<00:02, 904.65it/s] 38%|███▊      | 1267/3373 [00:01<00:02, 910.66it/s] 42%|████▏     | 1415/3373 [00:01<00:01, 1065.29it/s] 45%|████▌     | 1526/3373 [00:01<00:02, 850.64it/s]  48%|████▊     | 1621/3373 [00:01<00:02, 866.95it/s] 51%|█████     | 1715/3373 [00:01<00:01, 879.49it/s] 54%|█████▎    | 1808/3373 [00:02<00:01, 884.39it/s] 56%|█████▋    | 1900/3373 [00:02<00:02, 721.71it/s] 60%|█████▉    | 2017/3373 [00:02<00:01, 828.70it/s] 63%|██████▎   | 2116/3373 [00:02<00:01, 864.13it/s] 65%|██████▌   | 2209/3373 [00:02<00:01, 880.95it/s] 69%|██████▉   | 2339/3373 [00:02<00:01, 995.49it/s] 73%|███████▎  | 2477/3373 [00:02<00:00, 1102.81it/s] 77%|███████▋  | 2595/3373 [00:02<00:00, 1124.86it/s] 82%|████████▏ | 2775/3373 [00:02<00:00, 1321.04it/s] 86%|████████▋ | 2910/3373 [00:03<00:00, 1290.82it/s] 90%|█████████ | 3041/3373 [00:03<00:00, 1025.17it/s] 94%|█████████▎| 3154/3373 [00:03<00:00, 1039.51it/s] 97%|█████████▋| 3267/3373 [00:03<00:00, 1062.34it/s]100%|██████████| 3373/3373 [00:03<00:00, 962.53it/s] 
+Input feature Baichuan-13B-Base-UTT ===> dim is (1, 5120)
+  0%|          | 0/3373 [00:00<?, ?it/s]  3%|▎         | 99/3373 [00:00<00:03, 981.31it/s]  8%|▊         | 284/3373 [00:00<00:02, 1488.43it/s] 13%|█▎        | 433/3373 [00:00<00:02, 1464.31it/s] 18%|█▊        | 604/3373 [00:00<00:02, 1152.86it/s] 24%|██▍       | 812/3373 [00:00<00:01, 1410.51it/s] 32%|███▏      | 1084/3373 [00:00<00:01, 1792.91it/s] 38%|███▊      | 1277/3373 [00:00<00:01, 1829.95it/s] 46%|████▌     | 1549/3373 [00:00<00:00, 2092.35it/s] 52%|█████▏    | 1767/3373 [00:01<00:00, 2107.15it/s] 59%|█████▉    | 1984/3373 [00:01<00:00, 2077.81it/s] 65%|██████▌   | 2196/3373 [00:01<00:00, 1676.97it/s] 71%|███████   | 2379/3373 [00:01<00:00, 1697.18it/s] 77%|███████▋  | 2590/3373 [00:01<00:00, 1805.30it/s] 82%|████████▏ | 2780/3373 [00:01<00:00, 1454.63it/s] 89%|████████▊ | 2987/3373 [00:01<00:00, 1595.85it/s] 94%|█████████▍| 3168/3373 [00:01<00:00, 1649.23it/s]100%|██████████| 3373/3373 [00:01<00:00, 1692.50it/s]
+Input feature clip-vit-large-patch14-UTT ===> dim is (1, 768)
+test1: sample number 411
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-UTT
+  0%|          | 0/411 [00:00<?, ?it/s]  0%|          | 1/411 [00:00<00:42,  9.62it/s] 53%|█████▎    | 218/411 [00:00<00:00, 1259.08it/s]100%|██████████| 411/411 [00:00<00:00, 1359.23it/s]
+Input feature chinese-hubert-large-UTT ===> dim is (1, 1024)
+  0%|          | 0/411 [00:00<?, ?it/s] 34%|███▎      | 138/411 [00:00<00:00, 1378.70it/s] 97%|█████████▋| 397/411 [00:00<00:00, 2089.57it/s]100%|██████████| 411/411 [00:00<00:00, 2038.75it/s]
+Input feature Baichuan-13B-Base-UTT ===> dim is (1, 5120)
+  0%|          | 0/411 [00:00<?, ?it/s] 85%|████████▍ | 348/411 [00:00<00:00, 3456.22it/s]100%|██████████| 411/411 [00:00<00:00, 2203.57it/s]
+Input feature clip-vit-large-patch14-UTT ===> dim is (1, 768)
+test2: sample number 412
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-UTT
+  0%|          | 0/412 [00:00<?, ?it/s] 39%|███▉      | 162/412 [00:00<00:00, 1602.00it/s]100%|██████████| 412/412 [00:00<00:00, 2049.48it/s]
+Input feature chinese-hubert-large-UTT ===> dim is (1, 1024)
+  0%|          | 0/412 [00:00<?, ?it/s] 16%|█▌        | 65/412 [00:00<00:00, 649.89it/s] 62%|██████▏   | 257/412 [00:00<00:00, 1396.10it/s]100%|██████████| 412/412 [00:00<00:00, 1897.46it/s]
+Input feature Baichuan-13B-Base-UTT ===> dim is (1, 5120)
+  0%|          | 0/412 [00:00<?, ?it/s] 47%|████▋     | 194/412 [00:00<00:00, 1899.67it/s]100%|██████████| 412/412 [00:00<00:00, 2103.12it/s]
+Input feature clip-vit-large-patch14-UTT ===> dim is (1, 768)
+test3: sample number 834
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-UTT
+  0%|          | 0/834 [00:00<?, ?it/s] 24%|██▎       | 198/834 [00:00<00:00, 1953.58it/s] 59%|█████▉    | 494/834 [00:00<00:00, 2538.15it/s] 90%|████████▉ | 749/834 [00:00<00:00, 1764.75it/s]100%|██████████| 834/834 [00:00<00:00, 1691.62it/s]
+Input feature chinese-hubert-large-UTT ===> dim is (1, 1024)
+  0%|          | 0/834 [00:00<?, ?it/s] 21%|██        | 173/834 [00:00<00:00, 1729.64it/s] 41%|████▏     | 346/834 [00:00<00:00, 1112.01it/s] 56%|█████▋    | 470/834 [00:00<00:00, 1126.21it/s] 72%|███████▏  | 602/834 [00:00<00:00, 1189.69it/s] 87%|████████▋ | 727/834 [00:00<00:00, 1195.17it/s]100%|██████████| 834/834 [00:00<00:00, 1186.88it/s]
+Input feature Baichuan-13B-Base-UTT ===> dim is (1, 5120)
+  0%|          | 0/834 [00:00<?, ?it/s] 18%|█▊        | 147/834 [00:00<00:00, 1462.28it/s] 50%|████▉     | 415/834 [00:00<00:00, 2149.30it/s] 81%|████████  | 675/834 [00:00<00:00, 2350.69it/s]100%|██████████| 834/834 [00:00<00:00, 2096.10it/s]
+Input feature clip-vit-large-patch14-UTT ===> dim is (1, 768)
+train&val folder:5; test sets:3
+audio dimension: 1024; text dimension: 5120; video dimension: 768
+====== Training and Evaluation =======
+>>>>> Cross-validation: training on the 1 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.3229; eval:-0.1991; lr:0.000500
+epoch:2; metric:emoval; train:0.1876; eval:0.3650; lr:0.000500
+epoch:3; metric:emoval; train:0.4593; eval:0.3762; lr:0.000500
