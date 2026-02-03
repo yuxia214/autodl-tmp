@@ -103,3 +103,16 @@ epoch:16; metric:emoval; train:0.9280; eval:0.5220; lr:0.000150
 epoch:17; metric:emoval; train:0.9423; eval:0.5256; lr:0.000150
 epoch:18; metric:emoval; train:0.9514; eval:0.4876; lr:0.000150
 epoch:19; metric:emoval; train:0.9531; eval:0.4529; lr:0.000150
+epoch:20; metric:emoval; train:0.9555; eval:0.4806; lr:0.000150
+epoch:21; metric:emoval; train:0.9536; eval:0.4450; lr:0.000150
+epoch:22; metric:emoval; train:0.9474; eval:0.4764; lr:0.000150
+epoch:23; metric:emoval; train:0.9447; eval:0.3828; lr:0.000150
+epoch:24; metric:emoval; train:0.9209; eval:0.4612; lr:0.000150
+epoch:25; metric:emoval; train:0.9176; eval:0.5137; lr:0.000150
+epoch:26; metric:emoval; train:0.9074; eval:0.5140; lr:0.000075
+epoch:27; metric:emoval; train:0.9406; eval:0.5453; lr:0.000075
+epoch:28; metric:emoval; train:0.9423; eval:0.5045; lr:0.000075
+epoch:29; metric:emoval; train:0.9359; eval:0.4957; lr:0.000075
+epoch:30; metric:emoval; train:0.9405; eval:0.5132; lr:0.000075
+epoch:31; metric:emoval; train:0.9381; eval:0.5053; lr:0.000075
+epoch:32; metric:emoval; train:0.9317; eval:0.4862; lr:0.000075
