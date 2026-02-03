@@ -17,10 +17,10 @@ def extract_audio_from_video(video_path, audio_path):
 
 class DemoArgs:
     def __init__(self):
-        # Feature dimensions matching our extractor
-        self.text_dim = 768
-        self.audio_dim = 768
-        self.video_dim = 512
+        # Feature dimensions matching checkpoint (Baichuan-13B + hubert-large + clip-large)
+        self.text_dim = 5120
+        self.audio_dim = 1024
+        self.video_dim = 768
         
         # Model params
         self.output_dim1 = 6  # Emotion classes
@@ -91,7 +91,14 @@ def main():
         print(f"Loading weights from {args.checkpoint}...")
         try:
             state_dict = torch.load(args.checkpoint)
-            model.load_state_dict(state_dict)
+            # Remove 'model.' prefix from keys if present
+            new_state_dict = {}
+            for k, v in state_dict.items():
+                if k.startswith('model.'):
+                    new_state_dict[k[6:]] = v  # Remove 'model.' prefix
+                else:
+                    new_state_dict[k] = v
+            model.load_state_dict(new_state_dict)
         except Exception as e:
             print(f"Error loading checkpoint: {e}")
             print("Using random initialization (Predictions will be random!)")
