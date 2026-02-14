@@ -134,3 +134,306 @@ epoch:90; metric:emoval; train:0.8750; eval:0.6011; lr:0.000031
 epoch:91; metric:emoval; train:0.8652; eval:0.5970; lr:0.000031
 epoch:92; metric:emoval; train:0.8659; eval:0.5835; lr:0.000031
 epoch:93; metric:emoval; train:0.8669; eval:0.5959; lr:0.000031
+epoch:94; metric:emoval; train:0.8724; eval:0.6036; lr:0.000031
+epoch:95; metric:emoval; train:0.8764; eval:0.5865; lr:0.000031
+epoch:96; metric:emoval; train:0.8779; eval:0.5947; lr:0.000031
+epoch:97; metric:emoval; train:0.8784; eval:0.5913; lr:0.000031
+epoch:98; metric:emoval; train:0.8694; eval:0.5799; lr:0.000016
+epoch:99; metric:emoval; train:0.8721; eval:0.6104; lr:0.000016
+epoch:100; metric:emoval; train:0.8872; eval:0.6005; lr:0.000016
+Step3: saving and testing on the 1 folder
+>>>>> Finish: training on the 1-th folder, best_index: 75, duration: 290.5960500240326 >>>>>
+>>>>> Cross-validation: training on the 2 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.2062; eval:0.2345; lr:0.000500
+epoch:2; metric:emoval; train:0.3242; eval:0.5110; lr:0.000500
+epoch:3; metric:emoval; train:0.4964; eval:0.5161; lr:0.000500
+epoch:4; metric:emoval; train:0.5715; eval:0.5286; lr:0.000500
+epoch:5; metric:emoval; train:0.6028; eval:0.5483; lr:0.000500
+epoch:6; metric:emoval; train:0.6292; eval:0.5670; lr:0.000500
+epoch:7; metric:emoval; train:0.6479; eval:0.6188; lr:0.000500
+epoch:8; metric:emoval; train:0.6816; eval:0.5951; lr:0.000500
+epoch:9; metric:emoval; train:0.6772; eval:0.5615; lr:0.000500
+epoch:10; metric:emoval; train:0.6978; eval:0.5810; lr:0.000500
+epoch:11; metric:emoval; train:0.7163; eval:0.5490; lr:0.000500
+epoch:12; metric:emoval; train:0.7099; eval:0.5279; lr:0.000500
+epoch:13; metric:emoval; train:0.7261; eval:0.5776; lr:0.000500
+epoch:14; metric:emoval; train:0.7289; eval:0.6273; lr:0.000500
+epoch:15; metric:emoval; train:0.7374; eval:0.5739; lr:0.000500
+epoch:16; metric:emoval; train:0.7293; eval:0.5614; lr:0.000500
+epoch:17; metric:emoval; train:0.7335; eval:0.5206; lr:0.000500
+epoch:18; metric:emoval; train:0.7551; eval:0.5041; lr:0.000500
+epoch:19; metric:emoval; train:0.7199; eval:0.5682; lr:0.000500
+epoch:20; metric:emoval; train:0.7412; eval:0.6096; lr:0.000500
+epoch:21; metric:emoval; train:0.7264; eval:0.5698; lr:0.000500
+epoch:22; metric:emoval; train:0.7337; eval:0.5736; lr:0.000500
+epoch:23; metric:emoval; train:0.7267; eval:0.5595; lr:0.000500
+epoch:24; metric:emoval; train:0.7508; eval:0.2784; lr:0.000500
+epoch:25; metric:emoval; train:0.7277; eval:0.5028; lr:0.000250
+epoch:26; metric:emoval; train:0.7534; eval:0.6090; lr:0.000250
+epoch:27; metric:emoval; train:0.7682; eval:0.6212; lr:0.000250
+epoch:28; metric:emoval; train:0.7399; eval:0.5724; lr:0.000250
+epoch:29; metric:emoval; train:0.7632; eval:0.5954; lr:0.000250
+epoch:30; metric:emoval; train:0.7716; eval:0.6024; lr:0.000250
+epoch:31; metric:emoval; train:0.7853; eval:0.5990; lr:0.000250
+epoch:32; metric:emoval; train:0.7720; eval:0.5728; lr:0.000250
+epoch:33; metric:emoval; train:0.7677; eval:0.5728; lr:0.000250
+epoch:34; metric:emoval; train:0.7629; eval:0.5664; lr:0.000250
+epoch:35; metric:emoval; train:0.7753; eval:0.5659; lr:0.000250
+epoch:36; metric:emoval; train:0.7620; eval:0.5757; lr:0.000125
+epoch:37; metric:emoval; train:0.8022; eval:0.5927; lr:0.000125
+epoch:38; metric:emoval; train:0.8153; eval:0.6040; lr:0.000125
+epoch:39; metric:emoval; train:0.8059; eval:0.6336; lr:0.000125
+epoch:40; metric:emoval; train:0.8196; eval:0.5856; lr:0.000125
+epoch:41; metric:emoval; train:0.8155; eval:0.6188; lr:0.000125
+epoch:42; metric:emoval; train:0.8135; eval:0.5862; lr:0.000125
+epoch:43; metric:emoval; train:0.8156; eval:0.5992; lr:0.000125
+epoch:44; metric:emoval; train:0.8082; eval:0.5458; lr:0.000125
+epoch:45; metric:emoval; train:0.8152; eval:0.5061; lr:0.000125
+epoch:46; metric:emoval; train:0.8090; eval:0.5815; lr:0.000125
+epoch:47; metric:emoval; train:0.8159; eval:0.6130; lr:0.000125
+epoch:48; metric:emoval; train:0.8064; eval:0.5862; lr:0.000125
+epoch:49; metric:emoval; train:0.8191; eval:0.5516; lr:0.000125
+epoch:50; metric:emoval; train:0.8169; eval:0.5616; lr:0.000063
+epoch:51; metric:emoval; train:0.8341; eval:0.5739; lr:0.000063
+epoch:52; metric:emoval; train:0.8384; eval:0.6055; lr:0.000063
+epoch:53; metric:emoval; train:0.8321; eval:0.6088; lr:0.000063
+epoch:54; metric:emoval; train:0.8514; eval:0.6049; lr:0.000063
+epoch:55; metric:emoval; train:0.8360; eval:0.5764; lr:0.000063
+epoch:56; metric:emoval; train:0.8518; eval:0.5504; lr:0.000063
+epoch:57; metric:emoval; train:0.8443; eval:0.5922; lr:0.000063
+epoch:58; metric:emoval; train:0.8463; eval:0.5911; lr:0.000063
+epoch:59; metric:emoval; train:0.8370; eval:0.6178; lr:0.000063
+epoch:60; metric:emoval; train:0.8513; eval:0.5995; lr:0.000063
+epoch:61; metric:emoval; train:0.8358; eval:0.5872; lr:0.000031
+epoch:62; metric:emoval; train:0.8472; eval:0.5924; lr:0.000031
+epoch:63; metric:emoval; train:0.8585; eval:0.5978; lr:0.000031
+epoch:64; metric:emoval; train:0.8645; eval:0.6008; lr:0.000031
+epoch:65; metric:emoval; train:0.8623; eval:0.5981; lr:0.000031
+epoch:66; metric:emoval; train:0.8597; eval:0.5991; lr:0.000031
+epoch:67; metric:emoval; train:0.8692; eval:0.5977; lr:0.000031
+epoch:68; metric:emoval; train:0.8623; eval:0.6111; lr:0.000031
+epoch:69; metric:emoval; train:0.8544; eval:0.5984; lr:0.000031
+Early stopping at epoch 69, best epoch: 39
+Step3: saving and testing on the 2 folder
+>>>>> Finish: training on the 2-th folder, best_index: 38, duration: 202.49517488479614 >>>>>
+>>>>> Cross-validation: training on the 3 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.1675; eval:0.1379; lr:0.000500
+epoch:2; metric:emoval; train:0.3370; eval:0.4491; lr:0.000500
+epoch:3; metric:emoval; train:0.5325; eval:0.5372; lr:0.000500
+epoch:4; metric:emoval; train:0.5934; eval:0.4231; lr:0.000500
+epoch:5; metric:emoval; train:0.6141; eval:0.5107; lr:0.000500
+epoch:6; metric:emoval; train:0.6429; eval:0.5531; lr:0.000500
+epoch:7; metric:emoval; train:0.6617; eval:0.4888; lr:0.000500
+epoch:8; metric:emoval; train:0.6766; eval:0.4234; lr:0.000500
+epoch:9; metric:emoval; train:0.7032; eval:0.5295; lr:0.000500
+epoch:10; metric:emoval; train:0.7192; eval:0.4848; lr:0.000500
+epoch:11; metric:emoval; train:0.7092; eval:0.4756; lr:0.000500
+epoch:12; metric:emoval; train:0.7263; eval:0.5095; lr:0.000500
+epoch:13; metric:emoval; train:0.7379; eval:0.5071; lr:0.000500
+epoch:14; metric:emoval; train:0.7357; eval:0.5781; lr:0.000500
+epoch:15; metric:emoval; train:0.7456; eval:0.5238; lr:0.000500
+epoch:16; metric:emoval; train:0.7524; eval:0.5172; lr:0.000500
+epoch:17; metric:emoval; train:0.7355; eval:0.4043; lr:0.000500
+epoch:18; metric:emoval; train:0.7462; eval:0.5584; lr:0.000500
+epoch:19; metric:emoval; train:0.7423; eval:0.5448; lr:0.000500
+epoch:20; metric:emoval; train:0.7422; eval:0.5215; lr:0.000500
+epoch:21; metric:emoval; train:0.7321; eval:0.5382; lr:0.000500
+epoch:22; metric:emoval; train:0.7434; eval:0.5080; lr:0.000500
+epoch:23; metric:emoval; train:0.7253; eval:0.5036; lr:0.000500
+epoch:24; metric:emoval; train:0.7430; eval:0.5207; lr:0.000500
+epoch:25; metric:emoval; train:0.7287; eval:0.5367; lr:0.000250
+epoch:26; metric:emoval; train:0.7719; eval:0.5333; lr:0.000250
+epoch:27; metric:emoval; train:0.7685; eval:0.5327; lr:0.000250
+epoch:28; metric:emoval; train:0.7790; eval:0.5559; lr:0.000250
+epoch:29; metric:emoval; train:0.7819; eval:0.5286; lr:0.000250
+epoch:30; metric:emoval; train:0.7777; eval:0.5691; lr:0.000250
+epoch:31; metric:emoval; train:0.7575; eval:0.5110; lr:0.000250
+epoch:32; metric:emoval; train:0.7551; eval:0.5463; lr:0.000250
+epoch:33; metric:emoval; train:0.7711; eval:0.5726; lr:0.000250
+epoch:34; metric:emoval; train:0.7760; eval:0.5482; lr:0.000250
+epoch:35; metric:emoval; train:0.7693; eval:0.5594; lr:0.000250
+epoch:36; metric:emoval; train:0.7939; eval:0.5483; lr:0.000125
+epoch:37; metric:emoval; train:0.7846; eval:0.5618; lr:0.000125
+epoch:38; metric:emoval; train:0.8059; eval:0.5685; lr:0.000125
+epoch:39; metric:emoval; train:0.8117; eval:0.5606; lr:0.000125
+epoch:40; metric:emoval; train:0.8039; eval:0.5709; lr:0.000125
+epoch:41; metric:emoval; train:0.8200; eval:0.5439; lr:0.000125
+epoch:42; metric:emoval; train:0.8064; eval:0.5585; lr:0.000125
+epoch:43; metric:emoval; train:0.8134; eval:0.5392; lr:0.000125
+epoch:44; metric:emoval; train:0.8000; eval:0.5688; lr:0.000125
+Early stopping at epoch 44, best epoch: 14
+Step3: saving and testing on the 3 folder
+>>>>> Finish: training on the 3-th folder, best_index: 13, duration: 124.9001669883728 >>>>>
+>>>>> Cross-validation: training on the 4 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.1901; eval:0.2335; lr:0.000500
+epoch:2; metric:emoval; train:0.2925; eval:0.3488; lr:0.000500
+epoch:3; metric:emoval; train:0.4925; eval:0.5520; lr:0.000500
+epoch:4; metric:emoval; train:0.5753; eval:0.5082; lr:0.000500
+epoch:5; metric:emoval; train:0.6075; eval:0.4989; lr:0.000500
+epoch:6; metric:emoval; train:0.6152; eval:0.4791; lr:0.000500
+epoch:7; metric:emoval; train:0.6739; eval:0.5231; lr:0.000500
+epoch:8; metric:emoval; train:0.6760; eval:0.5520; lr:0.000500
+epoch:9; metric:emoval; train:0.7166; eval:0.5600; lr:0.000500
+epoch:10; metric:emoval; train:0.7107; eval:0.5481; lr:0.000500
+epoch:11; metric:emoval; train:0.7204; eval:0.5229; lr:0.000500
+epoch:12; metric:emoval; train:0.7213; eval:0.5912; lr:0.000500
+epoch:13; metric:emoval; train:0.7465; eval:0.5285; lr:0.000500
+epoch:14; metric:emoval; train:0.7403; eval:0.5375; lr:0.000500
+epoch:15; metric:emoval; train:0.7481; eval:0.5007; lr:0.000500
+epoch:16; metric:emoval; train:0.7484; eval:0.5811; lr:0.000500
+epoch:17; metric:emoval; train:0.7517; eval:0.5273; lr:0.000500
+epoch:18; metric:emoval; train:0.7443; eval:0.5671; lr:0.000500
+epoch:19; metric:emoval; train:0.7393; eval:0.5357; lr:0.000500
+epoch:20; metric:emoval; train:0.7350; eval:0.5596; lr:0.000500
+epoch:21; metric:emoval; train:0.7426; eval:0.5419; lr:0.000500
+epoch:22; metric:emoval; train:0.7345; eval:0.5287; lr:0.000500
+epoch:23; metric:emoval; train:0.7348; eval:0.5608; lr:0.000250
+epoch:24; metric:emoval; train:0.7766; eval:0.5799; lr:0.000250
+epoch:25; metric:emoval; train:0.7794; eval:0.5709; lr:0.000250
+epoch:26; metric:emoval; train:0.7956; eval:0.5489; lr:0.000250
+epoch:27; metric:emoval; train:0.7880; eval:0.5740; lr:0.000250
+epoch:28; metric:emoval; train:0.7773; eval:0.5965; lr:0.000250
+epoch:29; metric:emoval; train:0.7765; eval:0.4797; lr:0.000250
+epoch:30; metric:emoval; train:0.7666; eval:0.5283; lr:0.000250
+epoch:31; metric:emoval; train:0.7660; eval:0.6006; lr:0.000250
+epoch:32; metric:emoval; train:0.7820; eval:0.5602; lr:0.000250
+epoch:33; metric:emoval; train:0.7938; eval:0.6016; lr:0.000250
+epoch:34; metric:emoval; train:0.7867; eval:0.5651; lr:0.000250
+epoch:35; metric:emoval; train:0.7834; eval:0.5549; lr:0.000250
+epoch:36; metric:emoval; train:0.7915; eval:0.5713; lr:0.000250
+epoch:37; metric:emoval; train:0.7529; eval:0.5643; lr:0.000250
+epoch:38; metric:emoval; train:0.7812; eval:0.5329; lr:0.000250
+epoch:39; metric:emoval; train:0.7809; eval:0.5883; lr:0.000250
+epoch:40; metric:emoval; train:0.7803; eval:0.5247; lr:0.000250
+epoch:41; metric:emoval; train:0.7716; eval:0.5397; lr:0.000250
+epoch:42; metric:emoval; train:0.7826; eval:0.4953; lr:0.000250
+epoch:43; metric:emoval; train:0.8000; eval:0.5221; lr:0.000250
+epoch:44; metric:emoval; train:0.7711; eval:0.5372; lr:0.000125
+epoch:45; metric:emoval; train:0.8168; eval:0.5899; lr:0.000125
+epoch:46; metric:emoval; train:0.8148; eval:0.5894; lr:0.000125
+epoch:47; metric:emoval; train:0.8204; eval:0.5949; lr:0.000125
+epoch:48; metric:emoval; train:0.8275; eval:0.5735; lr:0.000125
+epoch:49; metric:emoval; train:0.8337; eval:0.5649; lr:0.000125
+epoch:50; metric:emoval; train:0.8240; eval:0.5862; lr:0.000125
+epoch:51; metric:emoval; train:0.8216; eval:0.5734; lr:0.000125
+epoch:52; metric:emoval; train:0.8309; eval:0.5866; lr:0.000125
+epoch:53; metric:emoval; train:0.8437; eval:0.5959; lr:0.000125
+epoch:54; metric:emoval; train:0.8335; eval:0.5844; lr:0.000125
+epoch:55; metric:emoval; train:0.8330; eval:0.5883; lr:0.000063
+epoch:56; metric:emoval; train:0.8331; eval:0.5798; lr:0.000063
+epoch:57; metric:emoval; train:0.8506; eval:0.5824; lr:0.000063
+epoch:58; metric:emoval; train:0.8416; eval:0.6118; lr:0.000063
+epoch:59; metric:emoval; train:0.8602; eval:0.6031; lr:0.000063
+epoch:60; metric:emoval; train:0.8437; eval:0.5926; lr:0.000063
+epoch:61; metric:emoval; train:0.8370; eval:0.6070; lr:0.000063
+epoch:62; metric:emoval; train:0.8533; eval:0.5921; lr:0.000063
+epoch:63; metric:emoval; train:0.8481; eval:0.5869; lr:0.000063
+epoch:64; metric:emoval; train:0.8510; eval:0.5826; lr:0.000063
+epoch:65; metric:emoval; train:0.8641; eval:0.5869; lr:0.000063
+epoch:66; metric:emoval; train:0.8373; eval:0.5974; lr:0.000063
+epoch:67; metric:emoval; train:0.8488; eval:0.5901; lr:0.000063
+epoch:68; metric:emoval; train:0.8654; eval:0.5806; lr:0.000063
+epoch:69; metric:emoval; train:0.8608; eval:0.5776; lr:0.000031
+epoch:70; metric:emoval; train:0.8677; eval:0.5843; lr:0.000031
+epoch:71; metric:emoval; train:0.8611; eval:0.6023; lr:0.000031
+epoch:72; metric:emoval; train:0.8563; eval:0.5996; lr:0.000031
+epoch:73; metric:emoval; train:0.8577; eval:0.6011; lr:0.000031
+epoch:74; metric:emoval; train:0.8726; eval:0.6063; lr:0.000031
+epoch:75; metric:emoval; train:0.8708; eval:0.6021; lr:0.000031
+epoch:76; metric:emoval; train:0.8757; eval:0.6000; lr:0.000031
+epoch:77; metric:emoval; train:0.8697; eval:0.5935; lr:0.000031
+epoch:78; metric:emoval; train:0.8614; eval:0.6040; lr:0.000031
+epoch:79; metric:emoval; train:0.8625; eval:0.6065; lr:0.000031
+epoch:80; metric:emoval; train:0.8668; eval:0.5942; lr:0.000016
+epoch:81; metric:emoval; train:0.8719; eval:0.5954; lr:0.000016
+epoch:82; metric:emoval; train:0.8792; eval:0.6109; lr:0.000016
+epoch:83; metric:emoval; train:0.8838; eval:0.6047; lr:0.000016
+epoch:84; metric:emoval; train:0.8653; eval:0.6052; lr:0.000016
+epoch:85; metric:emoval; train:0.8783; eval:0.5941; lr:0.000016
+epoch:86; metric:emoval; train:0.8733; eval:0.6029; lr:0.000016
+epoch:87; metric:emoval; train:0.8793; eval:0.6010; lr:0.000016
+epoch:88; metric:emoval; train:0.8792; eval:0.5951; lr:0.000016
+Early stopping at epoch 88, best epoch: 58
+Step3: saving and testing on the 4 folder
+>>>>> Finish: training on the 4-th folder, best_index: 57, duration: 246.6264796257019 >>>>>
+>>>>> Cross-validation: training on the 5 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.1506; eval:0.2052; lr:0.000500
+epoch:2; metric:emoval; train:0.3337; eval:0.5436; lr:0.000500
+epoch:3; metric:emoval; train:0.4951; eval:0.5222; lr:0.000500
+epoch:4; metric:emoval; train:0.5702; eval:0.5515; lr:0.000500
+epoch:5; metric:emoval; train:0.6020; eval:0.5684; lr:0.000500
+epoch:6; metric:emoval; train:0.6258; eval:0.6022; lr:0.000500
+epoch:7; metric:emoval; train:0.6513; eval:0.4926; lr:0.000500
+epoch:8; metric:emoval; train:0.6734; eval:0.5636; lr:0.000500
+epoch:9; metric:emoval; train:0.6856; eval:0.5970; lr:0.000500
+epoch:10; metric:emoval; train:0.7036; eval:0.5674; lr:0.000500
+epoch:11; metric:emoval; train:0.6731; eval:0.5908; lr:0.000500
+epoch:12; metric:emoval; train:0.7040; eval:0.5555; lr:0.000500
+epoch:13; metric:emoval; train:0.7095; eval:0.5903; lr:0.000500
+epoch:14; metric:emoval; train:0.7294; eval:0.5590; lr:0.000500
+epoch:15; metric:emoval; train:0.7277; eval:0.5175; lr:0.000500
+epoch:16; metric:emoval; train:0.7468; eval:0.5380; lr:0.000500
+epoch:17; metric:emoval; train:0.7280; eval:0.5435; lr:0.000250
+epoch:18; metric:emoval; train:0.7904; eval:0.6010; lr:0.000250
+epoch:19; metric:emoval; train:0.7929; eval:0.5687; lr:0.000250
+epoch:20; metric:emoval; train:0.7854; eval:0.5964; lr:0.000250
+epoch:21; metric:emoval; train:0.7990; eval:0.5824; lr:0.000250
+epoch:22; metric:emoval; train:0.7972; eval:0.5529; lr:0.000250
+epoch:23; metric:emoval; train:0.7794; eval:0.5908; lr:0.000250
+epoch:24; metric:emoval; train:0.7817; eval:0.5727; lr:0.000250
+epoch:25; metric:emoval; train:0.7585; eval:0.5918; lr:0.000250
+epoch:26; metric:emoval; train:0.7706; eval:0.6118; lr:0.000250
+epoch:27; metric:emoval; train:0.7721; eval:0.5863; lr:0.000250
+epoch:28; metric:emoval; train:0.7516; eval:0.5948; lr:0.000250
+epoch:29; metric:emoval; train:0.7598; eval:0.5694; lr:0.000250
+epoch:30; metric:emoval; train:0.7521; eval:0.5806; lr:0.000250
+epoch:31; metric:emoval; train:0.7588; eval:0.5784; lr:0.000250
+epoch:32; metric:emoval; train:0.7698; eval:0.5138; lr:0.000250
+epoch:33; metric:emoval; train:0.7573; eval:0.5702; lr:0.000250
+epoch:34; metric:emoval; train:0.7433; eval:0.5712; lr:0.000250
+epoch:35; metric:emoval; train:0.7614; eval:0.5891; lr:0.000250
+epoch:36; metric:emoval; train:0.7754; eval:0.5824; lr:0.000250
+epoch:37; metric:emoval; train:0.7686; eval:0.5622; lr:0.000125
+epoch:38; metric:emoval; train:0.7833; eval:0.5915; lr:0.000125
+epoch:39; metric:emoval; train:0.8022; eval:0.5934; lr:0.000125
+epoch:40; metric:emoval; train:0.8110; eval:0.5788; lr:0.000125
+epoch:41; metric:emoval; train:0.8141; eval:0.5846; lr:0.000125
+epoch:42; metric:emoval; train:0.8000; eval:0.5710; lr:0.000125
+epoch:43; metric:emoval; train:0.8055; eval:0.5757; lr:0.000125
+epoch:44; metric:emoval; train:0.7919; eval:0.5945; lr:0.000125
+epoch:45; metric:emoval; train:0.8020; eval:0.6001; lr:0.000125
+epoch:46; metric:emoval; train:0.8132; eval:0.5680; lr:0.000125
+epoch:47; metric:emoval; train:0.8026; eval:0.5836; lr:0.000125
+epoch:48; metric:emoval; train:0.8080; eval:0.5877; lr:0.000063
+epoch:49; metric:emoval; train:0.8279; eval:0.5943; lr:0.000063
+epoch:50; metric:emoval; train:0.8284; eval:0.6005; lr:0.000063
+epoch:51; metric:emoval; train:0.8392; eval:0.5945; lr:0.000063
+epoch:52; metric:emoval; train:0.8370; eval:0.5948; lr:0.000063
+epoch:53; metric:emoval; train:0.8475; eval:0.5945; lr:0.000063
+epoch:54; metric:emoval; train:0.8387; eval:0.5675; lr:0.000063
+epoch:55; metric:emoval; train:0.8484; eval:0.5951; lr:0.000063
+epoch:56; metric:emoval; train:0.8369; eval:0.5837; lr:0.000063
+Early stopping at epoch 56, best epoch: 26
+Step3: saving and testing on the 5 folder
+>>>>> Finish: training on the 5-th folder, best_index: 25, duration: 155.0886254310608 >>>>>
+====== Prediction and Saving =======
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v7/outputs/results-trimodal/result/cv_features:Baichuan-13B-Base-UTT+chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v7+utt+None_f1:0.7649_acc:0.7676_val:0.6226_1771056597.9563005.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v7/outputs/results-trimodal/result/test1_features:Baichuan-13B-Base-UTT+chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v7+utt+None_f1:0.8259_acc:0.8248_val:0.6257_1771056597.9563005.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v7/outputs/results-trimodal/result/test2_features:Baichuan-13B-Base-UTT+chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v7+utt+None_f1:0.7652_acc:0.7694_val:0.6247_1771056597.9563005.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v7/outputs/results-trimodal/result/test3_features:Baichuan-13B-Base-UTT+chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v7+utt+None_f1:0.8725_acc:0.8753_val:80.5346_1771056597.9563005.npz

@@ -44,10 +44,13 @@ BATCH_SIZE=32
 EARLY_STOP=30
 LR_PATIENCE=10
 
-# sweep grid (8 runs)
-VAL_LOSS_WEIGHTS=(1.2 1.4)
-VAL_CONSISTENCY_WEIGHTS=(0.08 0.12)
-NOISE_STDS=(0.02 0.03)
+# sweep configs (3 runs)
+# format: "<name> <val_loss_weight> <valence_consistency_weight> <feature_noise_std>"
+CONFIGS=(
+  "baseline 1.3 0.12 0.03"
+  "mse_focus 1.4 0.10 0.02"
+  "noise_focus 1.2 0.14 0.04"
+)
 
 cd "${MERBENCH_ROOT}"
 
@@ -56,68 +59,67 @@ if [ ! -f "${SUMMARY_CSV}" ]; then
 fi
 
 echo "[SWEEP] waiting current v7 run to finish (if any)..."
-while pgrep -af "main-robust.py.*attention_robust_v7" >/dev/null; do
+while pgrep -af "python -u main-robust.py.*attention_robust_v7" >/dev/null; do
   echo "[SWEEP] detected running v7 training, sleep 120s..."
   sleep 120
 done
-echo "[SWEEP] start sequential sweep runs"
+echo "[SWEEP] start sequential sweep runs (3 configs)"
 
-for VLW in "${VAL_LOSS_WEIGHTS[@]}"; do
-  for VCW in "${VAL_CONSISTENCY_WEIGHTS[@]}"; do
-    for NSD in "${NOISE_STDS[@]}"; do
-      TAG="v7sw_vlw${VLW}_vcw${VCW}_nsd${NSD}_$(date +%Y%m%d_%H%M%S)"
-      LOG_FILE="${SWEEP_LOG_DIR}/${TAG}.log"
-      SAVE_ROOT="${SWEEP_RESULT_DIR}/${TAG}"
+for cfg in "${CONFIGS[@]}"; do
+  read -r CFG_NAME VLW VCW NSD <<< "${cfg}"
+  TAG="v7sw_${CFG_NAME}_vlw${VLW}_vcw${VCW}_nsd${NSD}_$(date +%Y%m%d_%H%M%S)"
+  LOG_FILE="${SWEEP_LOG_DIR}/${TAG}.log"
+  SAVE_ROOT="${SWEEP_RESULT_DIR}/${TAG}"
 
-      echo "===================================================="
-      echo "[SWEEP] ${TAG}"
-      echo "  val_loss_weight=${VLW}"
-      echo "  valence_consistency_weight=${VCW}"
-      echo "  feature_noise_std=${NSD}"
-      echo "  log=${LOG_FILE}"
-      echo "===================================================="
+  echo "===================================================="
+  echo "[SWEEP] ${TAG}"
+  echo "  val_loss_weight=${VLW}"
+  echo "  valence_consistency_weight=${VCW}"
+  echo "  feature_noise_std=${NSD}"
+  echo "  log=${LOG_FILE}"
+  echo "===================================================="
 
-      python -u main-robust.py \
-        --model='attention_robust_v7' \
-        --dataset="${DATASET}" \
-        --feat_type="${FEAT_TYPE}" \
-        --audio_feature="${AUDIO_FEAT}" \
-        --text_feature="${TEXT_FEAT}" \
-        --video_feature="${VIDEO_FEAT}" \
-        --save_root="${SAVE_ROOT}" \
-        --hidden_dim="${HIDDEN_DIM}" \
-        --dropout="${DROPOUT}" \
-        --use_vae \
-        --kl_weight="${KL_WEIGHT}" \
-        --recon_weight="${RECON_WEIGHT}" \
-        --cross_kl_weight="${CROSS_KL_WEIGHT}" \
-        --use_dynamic_kl \
-        --kl_warmup_epochs="${KL_WARMUP}" \
-        --use_proxy_attention \
-        --fusion_temperature="${FUSION_TEMP}" \
-        --num_attention_heads="${NUM_HEADS}" \
-        --modality_dropout="${MODALITY_DROPOUT}" \
-        --modality_dropout_warmup="${WARMUP_EPOCHS}" \
-        --emo_loss_weight="${EMO_LOSS_WEIGHT}" \
-        --val_loss_weight="${VLW}" \
-        --reg_loss_type="${REG_LOSS_TYPE}" \
-        --huber_beta="${HUBER_BETA}" \
-        --use_valence_prior \
-        --valence_consistency_weight="${VCW}" \
-        --valence_center_reg_weight="${VAL_CENTER_REG_WEIGHT}" \
-        --feature_noise_std="${NSD}" \
-        --feature_noise_prob="${FEATURE_NOISE_PROB}" \
-        --feature_noise_warmup="${FEATURE_NOISE_WARMUP}" \
-        --lr="${LR}" \
-        --l2="${L2}" \
-        --epochs="${EPOCHS}" \
-        --batch_size="${BATCH_SIZE}" \
-        --early_stopping_patience="${EARLY_STOP}" \
-        --lr_patience="${LR_PATIENCE}" \
-        --gpu="${GPU_ID}" \
-        2>&1 | tee "${LOG_FILE}"
+  python -u main-robust.py \
+    --model='attention_robust_v7' \
+    --dataset="${DATASET}" \
+    --feat_type="${FEAT_TYPE}" \
+    --audio_feature="${AUDIO_FEAT}" \
+    --text_feature="${TEXT_FEAT}" \
+    --video_feature="${VIDEO_FEAT}" \
+    --save_root="${SAVE_ROOT}" \
+    --hidden_dim="${HIDDEN_DIM}" \
+    --dropout="${DROPOUT}" \
+    --use_vae \
+    --kl_weight="${KL_WEIGHT}" \
+    --recon_weight="${RECON_WEIGHT}" \
+    --cross_kl_weight="${CROSS_KL_WEIGHT}" \
+    --use_dynamic_kl \
+    --kl_warmup_epochs="${KL_WARMUP}" \
+    --use_proxy_attention \
+    --fusion_temperature="${FUSION_TEMP}" \
+    --num_attention_heads="${NUM_HEADS}" \
+    --modality_dropout="${MODALITY_DROPOUT}" \
+    --modality_dropout_warmup="${WARMUP_EPOCHS}" \
+    --emo_loss_weight="${EMO_LOSS_WEIGHT}" \
+    --val_loss_weight="${VLW}" \
+    --reg_loss_type="${REG_LOSS_TYPE}" \
+    --huber_beta="${HUBER_BETA}" \
+    --use_valence_prior \
+    --valence_consistency_weight="${VCW}" \
+    --valence_center_reg_weight="${VAL_CENTER_REG_WEIGHT}" \
+    --feature_noise_std="${NSD}" \
+    --feature_noise_prob="${FEATURE_NOISE_PROB}" \
+    --feature_noise_warmup="${FEATURE_NOISE_WARMUP}" \
+    --lr="${LR}" \
+    --l2="${L2}" \
+    --epochs="${EPOCHS}" \
+    --batch_size="${BATCH_SIZE}" \
+    --early_stopping_patience="${EARLY_STOP}" \
+    --lr_patience="${LR_PATIENCE}" \
+    --gpu="${GPU_ID}" \
+    2>&1 | tee "${LOG_FILE}"
 
-      python - <<'PY' "${LOG_FILE}" "${SUMMARY_CSV}" "${TAG}" "${VLW}" "${VCW}" "${NSD}"
+  python - <<'PY' "${LOG_FILE}" "${SUMMARY_CSV}" "${TAG}" "${VLW}" "${VCW}" "${NSD}"
 import re
 import sys
 from pathlib import Path
@@ -166,9 +168,6 @@ with summary_csv.open('a', encoding='utf-8') as f:
 
 print('[SWEEP] summary appended:', ','.join(row))
 PY
-
-    done
-  done
 done
 
 echo "[SWEEP] all runs finished"

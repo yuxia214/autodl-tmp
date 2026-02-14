@@ -238,6 +238,14 @@ if __name__ == '__main__':
     parser.add_argument('--feature_noise_prob', type=float, default=0.3, help='probability of applying feature noise')
     parser.add_argument('--feature_noise_warmup', type=int, default=10, help='warmup epochs before noise augmentation')
 
+    # V8新增参数: 双路径融合 + 可靠度建模
+    parser.add_argument('--use_gated_uncertainty', action='store_true', default=True, help='whether to use gated uncertainty fusion')
+    parser.add_argument('--no_gated_uncertainty', action='store_false', dest='use_gated_uncertainty', help='disable gated uncertainty fusion')
+    parser.add_argument('--fusion_residual_scale', type=float, default=0.4, help='residual branch contribution in dual-path fusion')
+    parser.add_argument('--reliability_temperature', type=float, default=1.0, help='temperature for reliability weighting')
+    parser.add_argument('--modality_agreement_weight', type=float, default=0.01, help='weight of modality agreement regularization')
+    parser.add_argument('--weight_consistency_weight', type=float, default=0.02, help='weight of reliability/fusion weight consistency')
+
     args = parser.parse_args()
     torch.cuda.set_device(args.gpu)
 

@@ -20,6 +20,7 @@ from .attention_robust_v4 import AttentionRobustV4
 from .attention_robust_v5 import AttentionRobustV5
 from .attention_robust_v6 import AttentionRobustV6
 from .attention_robust_v7 import AttentionRobustV7
+from .attention_robust_v8 import AttentionRobustV8
 
 class get_models(torch.nn.Module):
     def __init__(self, args):
@@ -37,6 +38,7 @@ class get_models(torch.nn.Module):
             'attention_robust_v5': AttentionRobustV5,  # V5版attention，深度VAE+自适应融合+Mixup
             'attention_robust_v6': AttentionRobustV6,  # V6版attention，V2稳态增强 + 动态KL
             'attention_robust_v7': AttentionRobustV7,  # V7版attention，情感-价度一致性 + 噪声增强
+            'attention_robust_v8': AttentionRobustV8,  # V8版attention，双路径融合 + 可靠度建模
             'lmf': LMF,
             'misa': MISA,
             'mmim': MMIM,
