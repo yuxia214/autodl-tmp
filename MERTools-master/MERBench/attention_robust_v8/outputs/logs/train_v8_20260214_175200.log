@@ -411,3 +411,38 @@ epoch:49; metric:emoval; train:0.7938; eval:0.5917; lr:0.000250
 epoch:50; metric:emoval; train:0.7924; eval:0.5176; lr:0.000250
 epoch:51; metric:emoval; train:0.7964; eval:0.5146; lr:0.000250
 epoch:52; metric:emoval; train:0.8023; eval:0.5136; lr:0.000250
+epoch:53; metric:emoval; train:0.8126; eval:0.5541; lr:0.000250
+epoch:54; metric:emoval; train:0.7832; eval:0.5616; lr:0.000250
+epoch:55; metric:emoval; train:0.7937; eval:0.5638; lr:0.000250
+epoch:56; metric:emoval; train:0.7878; eval:0.5468; lr:0.000250
+epoch:57; metric:emoval; train:0.7986; eval:0.5317; lr:0.000250
+epoch:58; metric:emoval; train:0.7902; eval:0.5315; lr:0.000250
+epoch:59; metric:emoval; train:0.7942; eval:0.5377; lr:0.000250
+epoch:60; metric:emoval; train:0.8057; eval:0.5222; lr:0.000125
+epoch:61; metric:emoval; train:0.8259; eval:0.5473; lr:0.000125
+epoch:62; metric:emoval; train:0.8160; eval:0.5539; lr:0.000125
+epoch:63; metric:emoval; train:0.8418; eval:0.5681; lr:0.000125
+epoch:64; metric:emoval; train:0.8330; eval:0.5694; lr:0.000125
+epoch:65; metric:emoval; train:0.8420; eval:0.5662; lr:0.000125
+epoch:66; metric:emoval; train:0.8431; eval:0.5669; lr:0.000125
+epoch:67; metric:emoval; train:0.8144; eval:0.5608; lr:0.000125
+epoch:68; metric:emoval; train:0.8398; eval:0.5661; lr:0.000125
+epoch:69; metric:emoval; train:0.8374; eval:0.5450; lr:0.000125
+epoch:70; metric:emoval; train:0.8408; eval:0.5536; lr:0.000125
+epoch:71; metric:emoval; train:0.8403; eval:0.5454; lr:0.000063
+epoch:72; metric:emoval; train:0.8459; eval:0.5697; lr:0.000063
+epoch:73; metric:emoval; train:0.8640; eval:0.5448; lr:0.000063
+epoch:74; metric:emoval; train:0.8598; eval:0.5737; lr:0.000063
+epoch:75; metric:emoval; train:0.8726; eval:0.5596; lr:0.000063
+epoch:76; metric:emoval; train:0.8522; eval:0.5501; lr:0.000063
+epoch:77; metric:emoval; train:0.8572; eval:0.5558; lr:0.000063
+epoch:78; metric:emoval; train:0.8608; eval:0.5430; lr:0.000063
+epoch:79; metric:emoval; train:0.8622; eval:0.5527; lr:0.000063
+Early stopping at epoch 79, best epoch: 49
+Step3: saving and testing on the 5 folder
+>>>>> Finish: training on the 5-th folder, best_index: 48, duration: 277.0251045227051 >>>>>
+====== Prediction and Saving =======
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v8/outputs/results-trimodal/result/cv_features:Baichuan-13B-Base-UTT+chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v8+utt+None_f1:0.7587_acc:0.7616_val:0.6204_1771063726.0261102.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v8/outputs/results-trimodal/result/test1_features:Baichuan-13B-Base-UTT+chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v8+utt+None_f1:0.8075_acc:0.8078_val:0.6158_1771063726.0261102.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v8/outputs/results-trimodal/result/test2_features:Baichuan-13B-Base-UTT+chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v8+utt+None_f1:0.7623_acc:0.7670_val:0.5972_1771063726.0261102.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v8/outputs/results-trimodal/result/test3_features:Baichuan-13B-Base-UTT+chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v8+utt+None_f1:0.8809_acc:0.8837_val:79.2938_1771063726.0261102.npz
