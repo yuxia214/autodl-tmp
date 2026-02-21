@@ -1,0 +1,4 @@
+split,samples,conflict_count,conflict_ratio,one_vs_two_count,all_three_diff_count,audio_outlier_count,text_outlier_count,video_outlier_count,audio_text_vs_video_count,valence_sign_conflict_count,full_match_majority_ratio,full_accuracy,duration_seconds
+test1,411,317,0.7712895377128953,233,84,36,102,95,95,163,0.8042813455657493,0.8175182481751825,4.32780385017395
+test2,412,309,0.75,228,81,34,82,112,112,191,0.7734138972809668,0.7572815533980582,4.32780385017395
+test3,834,651,0.7805755395683454,528,123,57,343,128,128,313,0.9071729957805907,0.8848920863309353,4.32780385017395

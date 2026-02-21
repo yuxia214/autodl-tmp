@@ -1,0 +1,23 @@
+[meta] python=/root/autodl-tmp/figure/bin/python
+[meta] cmd=/root/autodl-tmp/figure/bin/python /root/autodl-tmp/AutoFigure-Edit/autofigure2.py --method_text SmokeVerify2_20260216 runtime check. --output_dir /root/autodl-tmp/AutoFigure-Edit/outputs/20260216_223110_e6759abf --provider bianxie --api_key *** --sam_prompt icon,person,animal,robot --placeholder_mode label --merge_threshold 0.01 --sam_backend roboflow
+[stdout] ============================================================
+[stdout] Paper Method 到 SVG 图标替换流程 (Label 模式增强版 + Box合并)
+[stdout] ============================================================
+[stdout] Provider: bianxie
+[stdout] 输出目录: /root/autodl-tmp/AutoFigure-Edit/outputs/20260216_223110_e6759abf
+[stdout] 生图模型: gemini-3-pro-image-preview
+[stdout] SVG模型: gemini-3-pro-preview
+[stdout] SAM提示词: icon,person,animal,robot
+[stdout] 最低置信度: 0.0
+[stdout] SAM后端: roboflow
+[stdout] 执行到步骤: 5
+[stdout] 占位符模式: label
+[stdout] 优化迭代次数: 0
+[stdout] Box合并阈值: 0.01
+[stdout] ============================================================
+[stdout] ============================================================
+[stdout] 步骤一：使用 LLM 生成学术风格图片
+[stdout] ============================================================
+[stdout] Provider: bianxie
+[stdout] 模型: gemini-3-pro-image-preview
+[stdout] 发送请求到: https://api.bianxie.ai/v1

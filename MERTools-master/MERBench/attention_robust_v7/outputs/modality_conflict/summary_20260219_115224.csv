@@ -1,0 +1,2 @@
+split,samples,conflict_count,conflict_ratio,one_vs_two_count,all_three_diff_count,audio_outlier_count,text_outlier_count,video_outlier_count,audio_text_vs_video_count,valence_sign_conflict_count,full_match_majority_ratio,full_accuracy,duration_seconds
+test1,100,74,0.74,56,18,3,26,27,27,37,0.8658536585365854,0.86,1.055445909500122

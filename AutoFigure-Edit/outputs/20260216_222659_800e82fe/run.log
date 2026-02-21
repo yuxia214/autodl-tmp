@@ -1,0 +1,2 @@
+[meta] python=/root/autodl-tmp/figure/bin/python
+[meta] cmd=/root/autodl-tmp/figure/bin/python /root/autodl-tmp/AutoFigure-Edit/autofigure2.py --method_text test --output_dir /root/autodl-tmp/AutoFigure-Edit/outputs/20260216_222659_800e82fe --provider bianxie --api_key *** --sam_prompt icon,person,animal,robot --placeholder_mode label --merge_threshold 0.01 --sam_backend roboflow

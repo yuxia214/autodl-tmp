@@ -1,0 +1,122 @@
+[meta] python=/root/autodl-tmp/figure/bin/python
+[meta] cmd=/root/autodl-tmp/figure/bin/python /root/autodl-tmp/AutoFigure-Edit/autofigure2.py --method_text 研究提出的深度学习神经网络框架（图1），通过数据增强与参数微调机制，将CLIP作为视觉骨干使其适配运动员面部表情识别中。该框架的系统数据流程为“数据处理-特征提取-分类预测”。
+
+
+在训练过程中原始图像先经过几何变换、遮挡模拟及混合正则化的数据处理工程，以增强样本的多样性与模型识别的鲁棒性。在Block A中，数据增强处理后的图像张量送入预训练的CLIP ViT-L/14视觉骨干网络中，经过Patch Embedding处理后进入Transformer Block中经过多层自注意力机制，整合全局纹理进行深度特征编码，完成从像素到情绪的抽象，然后输出1024维度特征。在Block B中展示了轻量级MLP分类头的建构，骨干网络输出的1024维的深层特征向量，首先被压缩至512维，经过GELU激活函数与Dropout层以防止过拟合，然后构建轻量级可训练的分类头用于最终情绪预测。为了保留CLIP通用视觉知识使其适应学习识别面部表情，研究冻结了CLIP的所有原始权重W0，图一右侧Block C中，所有可以训练的低秩矩阵A和B被注入attention层中，通过ΔW=B⋅A与原始权重融合，极少参数训练即可实现情绪识别的高效适配，仅在Transformer层中并联注入可训练的低秩适LoRA模块，实现了小参数训练高效适配，同时该方式还可以应用于不同的体育场景实现模型的迅速泛化。
+2.2 运动场景增强策略
+针对复杂运动场景，研究构建了一个多阶段数据增强工程，包含空间几何变换、图片遮挡等来提升模型在复杂环境下的泛化能力与识别鲁棒性。
+
+
+2.2.1 几何与光度自适应变换
+针对赛场摄像头机位多数固定的问题，采用了概率为P=0.5的随机水平翻转（RandomHorizontalFlip）策略在数据预处理阶段模拟了不同的摄像头朝向。随后图像通过TrivialAugmentWide策略，自动从预设的增强空间中随机选取一种几何或光度变换（如图像旋转、对比度调整等）应用，该策略有效模拟了不同摄像机位、头部转动、光照变化等环境，从而增强模型对不同场景的识别能力。
+2.2.2 肢体与器械遮挡模拟
+针对赛场上的面部遮挡，头部转动等问题，研究应用随机擦除（Random Erasing）策略作为强正则化手段。设定p=0.5的触发概率，系统随机选择图像中的矩形区域进行像素置零，将擦除面积比例控制在图像总大小的2%~33%之间，长宽比范围限定为0.3-3.3。这一策略模拟了运动时的面部遮挡等情况，使CLIP无法通过完整的面部表情进行学习，转而利用眼部、嘴部等剩余局部表情特征进行全局互补推断，显著提升模型对遮挡识别的鲁棒性。
+2.2.3 运动模糊
+鉴于比赛中运动员快速移动可能造成面部的模糊，研究在训练阶段引入Mixup与Cutmix联合正则化策略。设定混合触发概率为0.8，通过Beta分布（α=0.5）生成插值系数λ。对于图像样本 (xi,yi) 和 (xj,yj)，Mixup生成的虚拟训练样本 (x,y) 定义为：
+x=λxi+(1−λ)xj #（1）
+y=λyi+(1−λ)yj #（2）
+这种不同面部叠加、剪裁模拟了高速运动产生的面部模糊情况，可以有效解决模型对噪声的过拟合，提升模型的泛化能力与对面部模糊的识别能力。
+2.3 CLIP视觉骨干
+为克服传统CNN模型过度依赖图像纹理特征而导致在遮挡、光照变化下性能下降的问题，本研究选取CLIP ViT-L/14作为视觉骨干。CLIP通过4亿对图文数据的对比学习，习得了图像内容与抽象视觉概念之间的深层关联。其零样本能力就与经过ImageNet上128万个数据训练过的ResNet-50准确度相当。
+CLIP利用对称对比损失函数实现了视觉与文本特征的深度对齐。假设训练批次包含N个图像-文本对{(Ii,Ti)}i=1N，图像嵌入向量为vi，文本嵌入向量为ti。CLIP优化目标是最大化配对样本的余弦相似度，同时最小化非配对样本的相似度。其图像到文本的损失函数ℒI→T定义为：
+ℒI→T=−1Ni=1Nlogexp(sim(vi,ti)⋅eτ)j=1Nexp(sim(vi,tj)⋅eτ) #（3）
+
+2.4 LoRA参数高效微调
+尽管CLIP ViT-L/14的骨干网络具有极佳的特征提取能力，但是微调至特定的复杂运动场景的情绪识别任务中需要极大的算力和显存占用，还可能导致其丢失原本预训练知识。为此，研究引入低秩适应（Low-Rank Adaptation，LoRA）作为微调策略。冻结骨干网络参数，仅针对Transformer层的Attention模块（Query和Value投影）注入可训练的低秩矩阵。与使用Adam微调的GPT-3 175B相比，LoRA可将可训练参数数量减少1万倍，GPU内存需求减少3倍。
+设预训练权重为W0∈ℝd×k，其参数更新量ΔW 被分解为两个低秩矩阵B∈ℝd×r和A∈ℝr×k的乘积（r≪d）。在前向传播中，输出h的计算引入了缩放因子α，公式如下：
+h=W0x+(α/r)BAx #（4）
+根据代码实证结果，本研究设定秩r=16，缩放系数α=32。此处引入缩放项α/r=2的意义在于放大低秩更新的信号强度，使其在冻结的预训练特征中能够快速实现特定任务的特征学习。相比全量微调，该策略仅需训练约0.4%的参数量即可实现对面部情绪识别与不同运动项目的快速适配。该特性移除了并行计算通路所产生的附加成本，使模型在维持高精度的前提下，拥有与原版模型几乎相近的推理速度，进而满足了复杂运动场景下高实时性的要求，及时提供情绪分析数据，为教练员干预及指导提供支持。
+
+2.5 情绪特征映射与加权损失函数
+2.5.1 非线性适配器设计
+研究设计了线性-激活-正则-线性的非线性适配器结构，旨在将处于通用的视觉-语言空间的CLIP输出的特征，映射到RAF-DB定义的七种基本情绪。全局特征向量x∈R1024经由下式计算得到分类对数几率z：
+z=W2(Dropout(GELU(W1x+b1)))+b2#（5）
+其中 W1W2分别是维度为512x1024和7x512的权重矩阵。引入GELU激活函数可以提供比ReLU更平滑的梯度流，有助于在大规模预训练特征上的微调收敛。
+2.5.2 逆类别频率加权损失
+研究引入逆类别频率权重在交叉熵损失函数中，旨在解决数据中各类情绪分布不均的问题，在数据中总样本数为N，类别c的样本数为Nc，类别总数为C，类别权重wc公式计算为：
+wc=NC⋅Nc #（6）
+最终的加权交叉熵损失函数ℒCE定义为：
+ℒCE=−c=1Cwc⋅yclog(pc)#（7）
+通过该加权机制，模型加大了对少样本类别（如害怕、厌恶）的惩罚力度，迫使模型关注那些在运动场景上虽少见但极具信息的负面表情。 --output_dir /root/autodl-tmp/AutoFigure-Edit/outputs/20260216_223916_eac7eb0c --provider bianxie --api_key *** --sam_prompt icon,person,animal,robot --placeholder_mode label --merge_threshold 0.01 --sam_backend roboflow --optimize_iterations 0
+[stdout] ============================================================
+[stdout] Paper Method 到 SVG 图标替换流程 (Label 模式增强版 + Box合并)
+[stdout] ============================================================
+[stdout] Provider: bianxie
+[stdout] 输出目录: /root/autodl-tmp/AutoFigure-Edit/outputs/20260216_223916_eac7eb0c
+[stdout] 生图模型: gemini-3-pro-image-preview
+[stdout] SVG模型: gemini-3-pro-preview
+[stdout] SAM提示词: icon,person,animal,robot
+[stdout] 最低置信度: 0.0
+[stdout] SAM后端: roboflow
+[stdout] 执行到步骤: 5
+[stdout] 占位符模式: label
+[stdout] 优化迭代次数: 0
+[stdout] Box合并阈值: 0.01
+[stdout] ============================================================
+[stdout] ============================================================
+[stdout] 步骤一：使用 LLM 生成学术风格图片
+[stdout] ============================================================
+[stdout] Provider: bianxie
+[stdout] 模型: gemini-3-pro-image-preview
+[stdout] 发送请求到: https://api.bianxie.ai/v1
+[stdout] [Bianxie] 图像生成 API 调用失败: Connection error.
+[stderr] Traceback (most recent call last):
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+[stderr]     yield
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpx/_transports/default.py", line 250, in handle_request
+[stderr]     resp = self._pool.handle_request(req)
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+[stderr]     raise exc from None
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+[stderr]     response = connection.handle_request(
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpcore/_sync/http_proxy.py", line 343, in handle_request
+[stderr]     return self._connection.handle_request(request)
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpcore/_sync/http11.py", line 136, in handle_request
+[stderr]     raise exc
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpcore/_sync/http11.py", line 106, in handle_request
+[stderr]     ) = self._receive_response_headers(**kwargs)
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpcore/_sync/http11.py", line 177, in _receive_response_headers
+[stderr]     event = self._receive_event(timeout=timeout)
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpcore/_sync/http11.py", line 231, in _receive_event
+[stderr]     raise RemoteProtocolError(msg)
+[stderr] httpcore.RemoteProtocolError: Server disconnected without sending a response.
+[stderr] The above exception was the direct cause of the following exception:
+[stderr] Traceback (most recent call last):
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/openai/_base_client.py", line 1005, in request
+[stderr]     response = self._client.send(
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpx/_client.py", line 914, in send
+[stderr]     response = self._send_handling_auth(
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+[stderr]     response = self._send_handling_redirects(
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+[stderr]     response = self._send_single_request(request)
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpx/_client.py", line 1014, in _send_single_request
+[stderr]     response = transport.handle_request(request)
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpx/_transports/default.py", line 249, in handle_request
+[stderr]     with map_httpcore_exceptions():
+[stderr]   File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/contextlib.py", line 153, in __exit__
+[stderr]     self.gen.throw(typ, value, traceback)
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+[stderr]     raise mapped_exc(message) from exc
+[stderr] httpx.RemoteProtocolError: Server disconnected without sending a response.
+[stderr] The above exception was the direct cause of the following exception:
+[stderr] Traceback (most recent call last):
+[stderr]   File "/root/autodl-tmp/AutoFigure-Edit/autofigure2.py", line 2592, in <module>
+[stderr]     result = method_to_svg(
+[stderr]   File "/root/autodl-tmp/AutoFigure-Edit/autofigure2.py", line 2290, in method_to_svg
+[stderr]     generate_figure_from_method(
+[stderr]   File "/root/autodl-tmp/AutoFigure-Edit/autofigure2.py", line 602, in generate_figure_from_method
+[stderr]     img = call_llm_image_generation(
+[stderr]   File "/root/autodl-tmp/AutoFigure-Edit/autofigure2.py", line 202, in call_llm_image_generation
+[stderr]     return _call_bianxie_image_generation(prompt, api_key, model, base_url, reference_image)
+[stderr]   File "/root/autodl-tmp/AutoFigure-Edit/autofigure2.py", line 303, in _call_bianxie_image_generation
+[stderr]     completion = client.chat.completions.create(
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/openai/_utils/_utils.py", line 286, in wrapper
+[stderr]     return func(*args, **kwargs)
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/openai/resources/chat/completions/completions.py", line 1192, in create
+[stderr]     return self._post(
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/openai/_base_client.py", line 1297, in post
+[stderr]     return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+[stderr]   File "/root/autodl-tmp/figure/lib/python3.10/site-packages/openai/_base_client.py", line 1037, in request
+[stderr]     raise APIConnectionError(request=request) from err
+[stderr] openai.APIConnectionError: Connection error.

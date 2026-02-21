@@ -1,0 +1,99 @@
+====== Params Pre-analysis =======
+args:  Namespace(audio_feature='chinese-hubert-large-UTT', batch_size=32, consistency_emo_weight=0.08, consistency_val_weight=0.05, contrastive_temperature=0.07, contrastive_weight=0.1, corruption_max_rate=0.45, corruption_warmup_epochs=25, cross_kl_weight=0.005, dataset='MER2023', debug=True, double_mask_ratio=0.35, dropout=0.35, e2e_dim=None, e2e_name=None, early_stopping_patience=3, emo_loss_weight=1.0, epochs=5, feat_scale=1, feat_type='utt', feature_noise_prob=0.3, feature_noise_std=0.02, feature_noise_warmup=2, focal_gamma=2.0, fusion_residual_scale=0.4, fusion_temperature=1.0, gate_alpha=0.5, gpu=0, grad_clip=1.0, hidden_dim=128, huber_beta=0.8, hyper_path=None, impute_loss_weight=0.1, kl_warmup_epochs=10, kl_weight=0.01, l2=5e-05, label_smoothing=0.1, latent_noise_std=0.02, lr=0.0005, lr_adjust='case1', lr_factor=0.5, lr_patience=2, mixup_alpha=0.4, modality_agreement_weight=0.01, modality_dropout=0.1, modality_dropout_warmup=5, model='attention_robust_v10', n_classes=None, num_attention_heads=4, num_workers=0, print_iters=100000000.0, quality_weight=0.6, recon_weight=0.1, reg_loss_type='smoothl1', reliability_temperature=1.0, save_iters=100000000.0, save_root='/root/autodl-tmp/MERTools-master/MERBench/attention_robust_v10/outputs/results-bimodal', savemodel=False, test_dataset=None, text_feature=None, train_dataset=None, use_contrastive=True, use_dynamic_kl=True, use_gated_fusion=True, use_gated_uncertainty=True, use_mixup=False, use_modality_dropout=True, use_proxy_attention=True, use_vae=True, use_valence_prior=True, val_loss_weight=1.4, valence_center_reg_weight=0.005, valence_consistency_weight=0.1, video_feature='clip-vit-large-patch14-UTT', weight_consistency_weight=0.02)
+====== Reading Data =======
+train: sample number 100
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-UTT
+video feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/clip-vit-large-patch14-UTT
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 22746.92it/s]
+Input feature chinese-hubert-large-UTT ===> dim is (1, 1024)
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 12405.51it/s]
+Input feature clip-vit-large-patch14-UTT ===> dim is (1, 768)
+test1: sample number 100
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-UTT
+video feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/clip-vit-large-patch14-UTT
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 10590.87it/s]
+Input feature chinese-hubert-large-UTT ===> dim is (1, 1024)
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 11493.13it/s]
+Input feature clip-vit-large-patch14-UTT ===> dim is (1, 768)
+test2: sample number 100
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-UTT
+video feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/clip-vit-large-patch14-UTT
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 11598.97it/s]
+Input feature chinese-hubert-large-UTT ===> dim is (1, 1024)
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 11251.72it/s]
+Input feature clip-vit-large-patch14-UTT ===> dim is (1, 768)
+test3: sample number 100
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-UTT
+video feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/clip-vit-large-patch14-UTT
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 11114.57it/s]
+Input feature chinese-hubert-large-UTT ===> dim is (1, 1024)
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 8117.33it/s]
+Input feature clip-vit-large-patch14-UTT ===> dim is (1, 768)
+train&val folder:5; test sets:3
+audio dimension: 1024; text dimension: 0; video dimension: 768
+====== Training and Evaluation =======
+>>>>> Cross-validation: training on the 1 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.9736; eval:-0.7335; lr:0.000500
+epoch:2; metric:emoval; train:-0.7956; eval:-0.5810; lr:0.000500
+epoch:3; metric:emoval; train:-0.7121; eval:-0.4902; lr:0.000500
+epoch:4; metric:emoval; train:-0.3682; eval:-0.2879; lr:0.000500
+epoch:5; metric:emoval; train:-0.2645; eval:-0.0665; lr:0.000500
+Step3: saving and testing on the 1 folder
+>>>>> Finish: training on the 1-th folder, best_index: 4, duration: 2.5892539024353027 >>>>>
+>>>>> Cross-validation: training on the 2 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.9499; eval:-0.6151; lr:0.000500
+epoch:2; metric:emoval; train:-0.6144; eval:-0.5483; lr:0.000500
+epoch:3; metric:emoval; train:-0.6219; eval:-0.4384; lr:0.000500
+epoch:4; metric:emoval; train:-0.3809; eval:-0.3354; lr:0.000500
+epoch:5; metric:emoval; train:-0.2271; eval:-0.2845; lr:0.000500
+Step3: saving and testing on the 2 folder
+>>>>> Finish: training on the 2-th folder, best_index: 4, duration: 0.5818774700164795 >>>>>
+>>>>> Cross-validation: training on the 3 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.8785; eval:-0.6251; lr:0.000500
+epoch:2; metric:emoval; train:-0.6839; eval:-0.5141; lr:0.000500
+epoch:3; metric:emoval; train:-0.4912; eval:-0.3613; lr:0.000500
+epoch:4; metric:emoval; train:-0.4512; eval:-0.2875; lr:0.000500
+epoch:5; metric:emoval; train:-0.1067; eval:-0.4811; lr:0.000500
+Step3: saving and testing on the 3 folder
+>>>>> Finish: training on the 3-th folder, best_index: 3, duration: 0.578838586807251 >>>>>
+>>>>> Cross-validation: training on the 4 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.7622; eval:-1.0013; lr:0.000500
+epoch:2; metric:emoval; train:-0.4688; eval:-1.0587; lr:0.000500
+epoch:3; metric:emoval; train:-0.3340; eval:-0.6404; lr:0.000500
+epoch:4; metric:emoval; train:-0.2871; eval:-0.6996; lr:0.000500
+epoch:5; metric:emoval; train:-0.0573; eval:-0.5060; lr:0.000500
+Step3: saving and testing on the 4 folder
+>>>>> Finish: training on the 4-th folder, best_index: 4, duration: 0.6707160472869873 >>>>>
+>>>>> Cross-validation: training on the 5 folder >>>>>
+Step1: build model (each folder has its own model)
+/root/miniconda3/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:60: UserWarning: The verbose parameter is deprecated. Please use get_last_lr() to access the learning rate.
+  warnings.warn(
+Step2: training (multiple epoches)
+epoch:1; metric:emoval; train:-0.7283; eval:-0.6134; lr:0.000500
+epoch:2; metric:emoval; train:-0.5587; eval:-0.7615; lr:0.000500
+epoch:3; metric:emoval; train:-0.5232; eval:-0.6306; lr:0.000500
+epoch:4; metric:emoval; train:-0.3001; eval:-0.5461; lr:0.000500
+epoch:5; metric:emoval; train:-0.2104; eval:-0.4530; lr:0.000500
+Step3: saving and testing on the 5 folder
+>>>>> Finish: training on the 5-th folder, best_index: 4, duration: 0.8625602722167969 >>>>>
+====== Prediction and Saving =======
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v10/outputs/results-bimodal/result/cv_features:chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v10+utt+None_f1:0.4440_acc:0.4800_val:3.0542_1771503771.2475324.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v10/outputs/results-bimodal/result/test1_features:chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v10+utt+None_f1:0.4735_acc:0.5200_val:2.4164_1771503771.2475324.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v10/outputs/results-bimodal/result/test2_features:chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v10+utt+None_f1:0.4163_acc:0.4800_val:1.8553_1771503771.2475324.npz
+save results in /root/autodl-tmp/MERTools-master/MERBench/attention_robust_v10/outputs/results-bimodal/result/test3_features:chinese-hubert-large-UTT+clip-vit-large-patch14-UTT_dataset:MER2023_model:attention_robust_v10+utt+None_f1:0.4426_acc:0.5000_val:84.2903_1771503771.2475324.npz

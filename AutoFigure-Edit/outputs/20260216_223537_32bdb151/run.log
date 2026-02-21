@@ -1,0 +1,76 @@
+[meta] python=/root/autodl-tmp/figure/bin/python
+[meta] cmd=/root/autodl-tmp/figure/bin/python /root/autodl-tmp/AutoFigure-Edit/autofigure2.py --method_text 2 方法
+2.1 整体框架概述
+研究提出的深度学习神经网络框架（图1），通过数据增强与参数微调机制，将CLIP作为视觉骨干使其适配运动员面部表情识别中。该框架的系统数据流程为“数据处理-特征提取-分类预测”。
+
+图1 深度学习神经网络框架与整体工作流程图
+Figure 1 Deep Learning Neural Network Framework and Overall Workflow Diagram
+
+在训练过程中原始图像先经过几何变换、遮挡模拟及混合正则化的数据处理工程，以增强样本的多样性与模型识别的鲁棒性。在Block A中，数据增强处理后的图像张量送入预训练的CLIP ViT-L/14视觉骨干网络中，经过Patch Embedding处理后进入Transformer Block中经过多层自注意力机制，整合全局纹理进行深度特征编码，完成从像素到情绪的抽象，然后输出1024维度特征。在Block B中展示了轻量级MLP分类头的建构，骨干网络输出的1024维的深层特征向量，首先被压缩至512维，经过GELU激活函数与Dropout层以防止过拟合，然后构建轻量级可训练的分类头用于最终情绪预测。为了保留CLIP通用视觉知识使其适应学习识别面部表情，研究冻结了CLIP的所有原始权重W0，图一右侧Block C中，所有可以训练的低秩矩阵A和B被注入attention层中，通过ΔW=B⋅A与原始权重融合，极少参数训练即可实现情绪识别的高效适配，仅在Transformer层中并联注入可训练的低秩适LoRA模块，实现了小参数训练高效适配，同时该方式还可以应用于不同的体育场景实现模型的迅速泛化。
+2.2 运动场景增强策略
+针对复杂运动场景，研究构建了一个多阶段数据增强工程，包含空间几何变换、图片遮挡等来提升模型在复杂环境下的泛化能力与识别鲁棒性。
+
+图2 数据增强流程图
+Figure 2 Data Augmentation Flowchart
+
+2.2.1 几何与光度自适应变换
+针对赛场摄像头机位多数固定的问题，采用了概率为P=0.5的随机水平翻转（RandomHorizontalFlip）策略在数据预处理阶段模拟了不同的摄像头朝向。随后图像通过TrivialAugmentWide策略，自动从预设的增强空间中随机选取一种几何或光度变换（如图像旋转、对比度调整等）应用，该策略有效模拟了不同摄像机位、头部转动、光照变化等环境，从而增强模型对不同场景的识别能力。
+2.2.2 肢体与器械遮挡模拟
+针对赛场上的面部遮挡，头部转动等问题，研究应用随机擦除（Random Erasing）策略作为强正则化手段。设定p=0.5的触发概率，系统随机选择图像中的矩形区域进行像素置零，将擦除面积比例控制在图像总大小的2%~33%之间，长宽比范围限定为0.3-3.3。这一策略模拟了运动时的面部遮挡等情况，使CLIP无法通过完整的面部表情进行学习，转而利用眼部、嘴部等剩余局部表情特征进行全局互补推断，显著提升模型对遮挡识别的鲁棒性。
+2.2.3 运动模糊
+鉴于比赛中运动员快速移动可能造成面部的模糊，研究在训练阶段引入Mixup与Cutmix联合正则化策略。设定混合触发概率为0.8，通过Beta分布（α=0.5）生成插值系数λ。对于图像样本 (xi,yi) 和 (xj,yj)，Mixup生成的虚拟训练样本 (x,y) 定义为：
+x=λxi+(1−λ)xj #（1）
+y=λyi+(1−λ)yj #（2）
+这种不同面部叠加、剪裁模拟了高速运动产生的面部模糊情况，可以有效解决模型对噪声的过拟合，提升模型的泛化能力与对面部模糊的识别能力。
+2.3 CLIP视觉骨干
+为克服传统CNN模型过度依赖图像纹理特征而导致在遮挡、光照变化下性能下降的问题，本研究选取CLIP ViT-L/14作为视觉骨干。CLIP通过4亿对图文数据的对比学习，习得了图像内容与抽象视觉概念之间的深层关联。其零样本能力就与经过ImageNet上128万个数据训练过的ResNet-50准确度相当。
+CLIP利用对称对比损失函数实现了视觉与文本特征的深度对齐。假设训练批次包含N个图像-文本对{(Ii,Ti)}i=1N，图像嵌入向量为vi，文本嵌入向量为ti。CLIP优化目标是最大化配对样本的余弦相似度，同时最小化非配对样本的相似度。其图像到文本的损失函数ℒI→T定义为：
+ℒI→T=−1Ni=1Nlogexp(sim(vi,ti)⋅eτ)j=1Nexp(sim(vi,tj)⋅eτ) #（3）
+
+2.4 LoRA参数高效微调
+尽管CLIP ViT-L/14的骨干网络具有极佳的特征提取能力，但是微调至特定的复杂运动场景的情绪识别任务中需要极大的算力和显存占用，还可能导致其丢失原本预训练知识。为此，研究引入低秩适应（Low-Rank Adaptation，LoRA）作为微调策略。冻结骨干网络参数，仅针对Transformer层的Attention模块（Query和Value投影）注入可训练的低秩矩阵。与使用Adam微调的GPT-3 175B相比，LoRA可将可训练参数数量减少1万倍，GPU内存需求减少3倍。
+设预训练权重为W0∈ℝd×k，其参数更新量ΔW 被分解为两个低秩矩阵B∈ℝd×r和A∈ℝr×k的乘积（r≪d）。在前向传播中，输出h的计算引入了缩放因子α，公式如下：
+h=W0x+(α/r)BAx #（4）
+根据代码实证结果，本研究设定秩r=16，缩放系数α=32。此处引入缩放项α/r=2的意义在于放大低秩更新的信号强度，使其在冻结的预训练特征中能够快速实现特定任务的特征学习。相比全量微调，该策略仅需训练约0.4%的参数量即可实现对面部情绪识别与不同运动项目的快速适配。该特性移除了并行计算通路所产生的附加成本，使模型在维持高精度的前提下，拥有与原版模型几乎相近的推理速度，进而满足了复杂运动场景下高实时性的要求，及时提供情绪分析数据，为教练员干预及指导提供支持。
+
+2.5 情绪特征映射与加权损失函数
+2.5.1 非线性适配器设计
+研究设计了线性-激活-正则-线性的非线性适配器结构，旨在将处于通用的视觉-语言空间的CLIP输出的特征，映射到RAF-DB定义的七种基本情绪。全局特征向量x∈R1024经由下式计算得到分类对数几率z：
+z=W2(Dropout(GELU(W1x+b1)))+b2#（5）
+其中 W1W2分别是维度为512x1024和7x512的权重矩阵。引入GELU激活函数可以提供比ReLU更平滑的梯度流，有助于在大规模预训练特征上的微调收敛。
+2.5.2 逆类别频率加权损失
+研究引入逆类别频率权重在交叉熵损失函数中，旨在解决数据中各类情绪分布不均的问题，在数据中总样本数为N，类别c的样本数为Nc，类别总数为C，类别权重wc公式计算为：
+wc=NC⋅Nc #（6）
+最终的加权交叉熵损失函数ℒCE定义为：
+ℒCE=−c=1Cwc⋅yclog(pc)#（7）
+通过该加权机制，模型加大了对少样本类别（如害怕、厌恶）的惩罚力度，迫使模型关注那些在运动场景上虽少见但极具信息的负面表情。
+2.6 实验设置与实施细节
+2.6.1 数据集
+本研究选用的面部数据集为真实世界采集（RAF-DB）Real-world Affective Faces (RAF) Database(Li et al，. 2019)。该数据集包含15339张在非实验室情况下采集的面部图像，每张图片都被约40名标注员独立标注以保证可靠性，包含七种离散情绪，包含运动员等不同身份的人脸图像和光照变化、头部姿态偏转及遮挡等复杂情况，与竞技体育现场的高动态特征高度契合（部分样本示例见图3和图4）。实验数据集划分训练集12271张，测试集3068张。
+
+图3 数据集部分遮挡与侧脸不同肤色示例图
+Figure 3 Example Images from the Dataset: Partial Occlusion，Profile Views，and Diverse Skin Tones
+
+图4 数据集部分运动员面部示例图 
+Figure 4 Sample Facial Images of Athletes from the Dataset
+
+2.6.2 实验环境与参数配置
+实验在autodl云端服务器平台上进行，硬件配置为Intel Core i9-10900K CPU与NVIDIA GeForce RTX 3090 GPU（24GB显存），软件环境为PyTorch 1.9.0框架。
+训练优化方法使用差分学习率（Differential Learning Rate），对冻结的CLIP骨干网络上的LoRA模块，另外设置学习率为1×10-4来保留通用的视觉知识，针对分类头适配器设定学习率为3×10-4来加速情绪识别的迁移。优化器选用AdamW，批量大小（Batch Size）设为64，共迭代150轮，并配合5轮线性预热的余弦退火策略。 --output_dir /root/autodl-tmp/AutoFigure-Edit/outputs/20260216_223537_32bdb151 --provider bianxie --api_key *** --sam_prompt icon,person,animal,robot --placeholder_mode label --merge_threshold 0.01 --sam_backend local --optimize_iterations 0 --reference_image_path /root/autodl-tmp/AutoFigure-Edit/refer_figure/2.png
+[stderr] usage: autofigure2.py [-h]
+[stderr]                       (--method_text METHOD_TEXT | --method_file METHOD_FILE)
+[stderr]                       [--output_dir OUTPUT_DIR]
+[stderr]                       [--provider {openrouter,bianxie}] [--api_key API_KEY]
+[stderr]                       [--base_url BASE_URL] [--image_model IMAGE_MODEL]
+[stderr]                       [--svg_model SVG_MODEL] [--use_reference_image]
+[stderr]                       [--reference_image_path REFERENCE_IMAGE_PATH]
+[stderr]                       [--sam_prompt SAM_PROMPT] [--min_score MIN_SCORE]
+[stderr]                       [--sam_backend {local,fal,roboflow,api}]
+[stderr]                       [--sam_api_key SAM_API_KEY]
+[stderr]                       [--sam_max_masks SAM_MAX_MASKS]
+[stderr]                       [--rmbg_model_path RMBG_MODEL_PATH]
+[stderr]                       [--stop_after {1,2,3,4,5}]
+[stderr]                       [--placeholder_mode {none,box,label}]
+[stderr]                       [--optimize_iterations OPTIMIZE_ITERATIONS]
+[stderr]                       [--merge_threshold MERGE_THRESHOLD]
+[stderr] autofigure2.py: error: 参考图片不存在: /root/autodl-tmp/AutoFigure-Edit/refer_figure/2.png
