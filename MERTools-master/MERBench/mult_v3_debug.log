@@ -1,0 +1,29 @@
+====== Params Pre-analysis =======
+args:  Namespace(audio_feature='chinese-hubert-large-FRA', batch_size=128, conv1d_kernel_size=3, dataset='MER2023', debug=False, dropout=0.0, e2e_dim=None, e2e_name=None, epochs=1, feat_scale=6, feat_type='frm_align', gpu=0, grad_clip=1.0, hidden_dim=64, hyper_path=None, l2=0.0001, layers=2, lr=0.0005, lr_adjust='case1', model='mult', n_classes=None, num_heads=8, num_workers=4, print_iters=100000000.0, save_iters=100000000.0, save_root='./saved-trimodal', savemodel=False, test_dataset=None, text_feature='Baichuan-13B-Base-FRA', train_dataset=None, video_feature='clip-vit-large-patch14-FRA')
+====== Reading Data =======
+train: sample number 3373
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-FRA
+Input feature chinese-hubert-large-FRA ===> dim is (38, 1024)
+Input feature Baichuan-13B-Base-FRA ===> dim is (1, 5120)
+Input feature clip-vit-large-patch14-FRA ===> dim is (19, 768)
+test1: sample number 411
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-FRA
+Input feature chinese-hubert-large-FRA ===> dim is (91, 1024)
+Input feature Baichuan-13B-Base-FRA ===> dim is (12, 5120)
+Input feature clip-vit-large-patch14-FRA ===> dim is (44, 768)
+test2: sample number 412
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-FRA
+Input feature chinese-hubert-large-FRA ===> dim is (121, 1024)
+Input feature Baichuan-13B-Base-FRA ===> dim is (11, 5120)
+Input feature clip-vit-large-patch14-FRA ===> dim is (60, 768)
+test3: sample number 834
+audio feature root: /root/autodl-tmp/MERTools-master/MERBench/dataset/mer2023-dataset-process/features/chinese-hubert-large-FRA
+Input feature chinese-hubert-large-FRA ===> dim is (250, 1024)
+Input feature Baichuan-13B-Base-FRA ===> dim is (9, 5120)
+Input feature clip-vit-large-patch14-FRA ===> dim is (125, 768)
+train&val folder:5; test sets:3
+audio dimension: 1024; text dimension: 5120; video dimension: 768
+====== Training and Evaluation =======
+>>>>> Cross-validation: training on the 1 folder >>>>>
+Step1: build model (each folder has its own model)
+Step2: training (multiple epoches)
